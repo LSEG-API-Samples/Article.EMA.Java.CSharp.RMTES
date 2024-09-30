@@ -4,6 +4,7 @@ import com.refinitiv.ema.access.*;
 import com.refinitiv.ema.rdm.EmaRdm;
 
 import java.nio.ByteBuffer;
+import java.util.Random;
 
 class AppClientProvider implements OmmProviderClient {
     public long itemHandle = 0;
@@ -55,7 +56,7 @@ class AppClientProvider implements OmmProviderClient {
             return;
         }
 
-        String utf8String = "匯豐控股";
+        String utf8String = "简体中文";
 
         byte[] bytesOne = {0x1B, 0x25, 0x30};
         byte[] bytesTwo = utf8String.getBytes();
@@ -76,7 +77,7 @@ class AppClientProvider implements OmmProviderClient {
         fieldList.add(EmaFactory.createFieldEntry().real(25, 3994, OmmReal.MagnitudeType.EXPONENT_NEG_2));
         fieldList.add(EmaFactory.createFieldEntry().real(30, 9, OmmReal.MagnitudeType.EXPONENT_0));
         fieldList.add(EmaFactory.createFieldEntry().real(31, 19, OmmReal.MagnitudeType.EXPONENT_0));
-        fieldList.add(EmaFactory.createFieldEntry().ascii(260, "Test Message")); //SEG_FORW
+        fieldList.add(EmaFactory.createFieldEntry().ascii(260, "Simplified Chinese")); //SEG_FORW
         fieldList.add(EmaFactory.createFieldEntry().rmtes(1352, emaBuffer));
 
         event.provider().submit(EmaFactory.createRefreshMsg().serviceName(reqMsg.serviceName()).name(reqMsg.name()).
@@ -103,6 +104,7 @@ public class RMTESProvider {
             FieldList fieldList = EmaFactory.createFieldList();
             UpdateMsg updateMsg = EmaFactory.createUpdateMsg();
 
+            System.out.println("Start IProvider Server");
             provider = EmaFactory.createOmmProvider(EmaFactory.createOmmIProviderConfig().operationModel(OmmIProviderConfig.OperationModel.USER_DISPATCH),
                     appClient);
 
@@ -111,14 +113,23 @@ public class RMTESProvider {
                 Thread.sleep(1000);
             }
 
-            for (int i = 0; i < 60; i++) {
+            String[]  utf8StringArray = {"简体中文", "繁體中文" , "日本語" ,"한국어","ภาษาไทย" };
+            String[]  asciiStringArray = {"Simplified Chinese", "Traditional Chinese" , "Japanese" ,"Korean", "Thai"};
+            Random rand = new Random();
+            int index_lang = 0;
+            for (int index = 0; index < 60; index++) {
                 provider.dispatch(1000);
 
+                index_lang = rand.nextInt(5);
+                ByteBuffer emaBuffer = encodeRMTES(utf8StringArray[index_lang]);
+
                 fieldList.clear();
-                fieldList.add(EmaFactory.createFieldEntry().real(22, 3991 + i, OmmReal.MagnitudeType.EXPONENT_NEG_2));
-                fieldList.add(EmaFactory.createFieldEntry().real(25, 3994 + i, OmmReal.MagnitudeType.EXPONENT_NEG_2));
-                fieldList.add(EmaFactory.createFieldEntry().real(30, 10 + i, OmmReal.MagnitudeType.EXPONENT_0));
-                fieldList.add(EmaFactory.createFieldEntry().real(31, 19 + i, OmmReal.MagnitudeType.EXPONENT_0));
+                fieldList.add(EmaFactory.createFieldEntry().real(22, 3991 + index, OmmReal.MagnitudeType.EXPONENT_NEG_2));
+                fieldList.add(EmaFactory.createFieldEntry().real(25, 3994 + index, OmmReal.MagnitudeType.EXPONENT_NEG_2));
+                fieldList.add(EmaFactory.createFieldEntry().real(30, 10 + index, OmmReal.MagnitudeType.EXPONENT_0));
+                fieldList.add(EmaFactory.createFieldEntry().real(31, 19 + index, OmmReal.MagnitudeType.EXPONENT_0));
+                fieldList.add(EmaFactory.createFieldEntry().ascii(260, asciiStringArray[index_lang])); //SEG_FORW
+                fieldList.add(EmaFactory.createFieldEntry().rmtes(1352, emaBuffer));
 
                 provider.submit(updateMsg.clear().payload(fieldList), appClient.itemHandle);
 
@@ -129,5 +140,18 @@ public class RMTESProvider {
         } finally {
             if (provider != null) provider.uninitialize();
         }
+    }
+
+    private static ByteBuffer encodeRMTES (String utf8Message){
+        byte[] bytesOne = {0x1B, 0x25, 0x30};
+        byte[] bytesTwo = utf8Message.getBytes();
+        byte[] byteRMTES = new byte[bytesOne.length + bytesTwo.length];
+
+        ByteBuffer buffer = ByteBuffer.wrap(byteRMTES);
+        buffer.put(bytesOne);
+        buffer.put(bytesTwo);
+        byteRMTES = buffer.array();
+
+        return ByteBuffer.wrap(byteRMTES);
     }
 }
