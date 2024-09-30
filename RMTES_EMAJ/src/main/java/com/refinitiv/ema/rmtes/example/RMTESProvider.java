@@ -3,6 +3,8 @@ package com.refinitiv.ema.rmtes.example;
 import com.refinitiv.ema.access.*;
 import com.refinitiv.ema.rdm.EmaRdm;
 
+import java.nio.ByteBuffer;
+
 class AppClientProvider implements OmmProviderClient {
     public long itemHandle = 0;
 
@@ -52,17 +54,30 @@ class AppClientProvider implements OmmProviderClient {
             processInvalidItemRequest(reqMsg, event);
             return;
         }
-        
+
+        String utf8String = "匯豐控股";
+
+        byte[] bytesOne = {0x1B, 0x25, 0x30};
+        byte[] bytesTwo = utf8String.getBytes();
+        byte[] byteRMTES = new byte[bytesOne.length + bytesTwo.length];
+
+        ByteBuffer buffer = ByteBuffer.wrap(byteRMTES);
+        buffer.put(bytesOne);
+        buffer.put(bytesTwo);
+        byteRMTES = buffer.array();
+
+        ByteBuffer emaBuffer = ByteBuffer.wrap(byteRMTES);
 
         FieldList fieldList = EmaFactory.createFieldList();
 
         fieldList.add(EmaFactory.createFieldEntry().ascii(3, reqMsg.name()));
         fieldList.add(EmaFactory.createFieldEntry().enumValue(15, 840));
-        fieldList.add(EmaFactory.createFieldEntry().real(21, 3900, OmmReal.MagnitudeType.EXPONENT_NEG_2));
         fieldList.add(EmaFactory.createFieldEntry().real(22, 3990, OmmReal.MagnitudeType.EXPONENT_NEG_2));
         fieldList.add(EmaFactory.createFieldEntry().real(25, 3994, OmmReal.MagnitudeType.EXPONENT_NEG_2));
         fieldList.add(EmaFactory.createFieldEntry().real(30, 9, OmmReal.MagnitudeType.EXPONENT_0));
         fieldList.add(EmaFactory.createFieldEntry().real(31, 19, OmmReal.MagnitudeType.EXPONENT_0));
+        fieldList.add(EmaFactory.createFieldEntry().ascii(260, "Test Message")); //SEG_FORW
+        fieldList.add(EmaFactory.createFieldEntry().rmtes(1352, emaBuffer));
 
         event.provider().submit(EmaFactory.createRefreshMsg().serviceName(reqMsg.serviceName()).name(reqMsg.name()).
                 state(OmmState.StreamState.OPEN, OmmState.DataState.OK, OmmState.StatusCode.NONE, "Refresh Completed").solicited(true).

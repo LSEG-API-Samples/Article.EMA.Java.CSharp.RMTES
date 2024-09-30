@@ -1,31 +1,40 @@
 package com.refinitiv.ema.rmtes.example;
 
-import com.refinitiv.ema.access.Msg;
-import com.refinitiv.ema.access.AckMsg;
-import com.refinitiv.ema.access.GenericMsg;
-import com.refinitiv.ema.access.RefreshMsg;
-import com.refinitiv.ema.access.ReqMsg;
-import com.refinitiv.ema.access.StatusMsg;
-import com.refinitiv.ema.access.UpdateMsg;
-import com.refinitiv.ema.access.EmaFactory;
-import com.refinitiv.ema.access.OmmConsumer;
-import com.refinitiv.ema.access.OmmConsumerClient;
-import com.refinitiv.ema.access.OmmConsumerConfig;
-import com.refinitiv.ema.access.OmmConsumerEvent;
-import com.refinitiv.ema.access.OmmException;
+import com.refinitiv.ema.access.*;
+import com.refinitiv.ema.rdm.EmaRdm;
 
 class AppClientConsumer implements OmmConsumerClient {
     public void onRefreshMsg(RefreshMsg refreshMsg, OmmConsumerEvent event) {
-        System.out.println(refreshMsg);
+        System.out.println("Item Name: " + (refreshMsg.hasName() ? refreshMsg.name() : "<not set>"));
+        System.out.println("Service Name: " + (refreshMsg.hasServiceName() ? refreshMsg.serviceName() : "<not set>"));
+
+        System.out.println("Item State: " + refreshMsg.state());
+
+        if (DataType.DataTypes.FIELD_LIST == refreshMsg.payload().dataType())
+            decode(refreshMsg.payload().fieldList());
+
+        System.out.println();
     }
 
     public void onUpdateMsg(UpdateMsg updateMsg, OmmConsumerEvent event) {
-        System.out.println(updateMsg);
+        System.out.println("Item Name: " + (updateMsg.hasName() ? updateMsg.name() : "<not set>"));
+        System.out.println("Service Name: " + (updateMsg.hasServiceName() ? updateMsg.serviceName() : "<not set>"));
+
+        if (DataType.DataTypes.FIELD_LIST == updateMsg.payload().dataType())
+            decode(updateMsg.payload().fieldList());
+
+        System.out.println();
     }
 
     public void onStatusMsg(StatusMsg statusMsg, OmmConsumerEvent event) {
 
-        System.out.println(statusMsg);
+        System.out.println("Item Name: " + (statusMsg.hasName() ? statusMsg.name() : "<not set>"));
+        System.out.println("Service Name: " + (statusMsg.hasServiceName() ? statusMsg.serviceName() : "<not set>"));
+
+        if (statusMsg.hasState())
+            System.out.println("Item State: " +statusMsg.state());
+
+        System.out.println();
     }
 
     public void onGenericMsg(GenericMsg genericMsg, OmmConsumerEvent consumerEvent) {
@@ -35,6 +44,47 @@ class AppClientConsumer implements OmmConsumerClient {
     }
 
     public void onAllMsg(Msg msg, OmmConsumerEvent consumerEvent) {
+    }
+
+    void decode(FieldList fieldList) {
+        fieldList.forEach(fieldEntry -> {
+            System.out.printf("Fid %d Name = %s DataType: %s Value: ", fieldEntry.fieldId(), fieldEntry.name(), DataType.asString(fieldEntry.load().dataType()));
+            if (Data.DataCode.BLANK == fieldEntry.code())
+                System.out.println(" blank");
+            else
+                switch (fieldEntry.loadType()) {
+                    case DataType.DataTypes.REAL:
+                        System.out.println(fieldEntry.real().asDouble());
+                        break;
+                    case DataType.DataTypes.DATE:
+                        System.out.println(fieldEntry.date().day() + " / " + fieldEntry.date().month() + " / " + fieldEntry.date().year());
+                        break;
+                    case DataType.DataTypes.TIME:
+                        System.out.println(fieldEntry.time().hour() + ":" + fieldEntry.time().minute() + ":" + fieldEntry.time().second() + ":" + fieldEntry.time().millisecond());
+                        break;
+                    case DataType.DataTypes.INT:
+                        System.out.println(fieldEntry.intValue());
+                        break;
+                    case DataType.DataTypes.UINT:
+                        System.out.println(fieldEntry.uintValue());
+                        break;
+                    case DataType.DataTypes.ASCII:
+                        System.out.println(fieldEntry.ascii());
+                        break;
+                    case DataType.DataTypes.ENUM:
+                        System.out.println(fieldEntry.hasEnumDisplay() ? fieldEntry.enumDisplay() : fieldEntry.enumValue());
+                        break;
+                    case DataType.DataTypes.RMTES:
+                        System.out.println(fieldEntry.rmtes());
+                        break;
+                    case DataType.DataTypes.ERROR:
+                        System.out.println("(" + fieldEntry.error().errorCodeAsString() + ")");
+                        break;
+                    default:
+                        System.out.println();
+                        break;
+                }
+        });
     }
 }
 
@@ -48,9 +98,24 @@ public class RMTESConsumer {
 
             consumer = EmaFactory.createOmmConsumer(config.host("localhost:14002").username("user"));
 
+            ElementList view = EmaFactory.createElementList();
+            OmmArray array = EmaFactory.createOmmArray();
+
+            array.fixedWidth(2);
+            array.add(EmaFactory.createOmmArrayEntry().intValue(15));
+            array.add(EmaFactory.createOmmArrayEntry().intValue(22));
+            array.add(EmaFactory.createOmmArrayEntry().intValue(25));
+			array.add(EmaFactory.createOmmArrayEntry().intValue(30));
+			array.add(EmaFactory.createOmmArrayEntry().intValue(31));
+			array.add(EmaFactory.createOmmArrayEntry().intValue(260));
+			array.add(EmaFactory.createOmmArrayEntry().intValue(1352));
+
+            view.add(EmaFactory.createElementEntry().uintValue(EmaRdm.ENAME_VIEW_TYPE, 1));
+            view.add(EmaFactory.createElementEntry().array(EmaRdm.ENAME_VIEW_DATA, array));
+
             ReqMsg reqMsg = EmaFactory.createReqMsg();
 
-            consumer.registerClient(reqMsg.serviceName("DIRECT_FEED").name("/LSEG.L"), appClient);
+            consumer.registerClient(reqMsg.serviceName("DIRECT_FEED").name("/LSEG.L").payload(view), appClient);
 
             Thread.sleep(6000000);
         } catch (InterruptedException | OmmException excp) {
