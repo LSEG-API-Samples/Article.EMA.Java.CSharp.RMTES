@@ -1,0 +1,13 @@
+### IntelliJ IDEA ###
+RMTES_EMAJ/.idea
+RMTES_EMAJ/*.iws
+RMTES_EMAJ/*.iml
+RMTES_EMAJ/*.ipr
+
+RMTES_EMAJ/target/
+
+### VS Code ###
+.vscode/
+
+### Mac OS ###
+.DS_Store
