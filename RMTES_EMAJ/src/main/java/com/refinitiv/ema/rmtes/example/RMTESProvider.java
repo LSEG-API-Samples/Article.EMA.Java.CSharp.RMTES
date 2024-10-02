@@ -1,3 +1,10 @@
+///*|----------------------------------------------------------------------------------------------------
+// *|            This source code is provided under the Apache 2.0 license
+// *|  and is provided AS IS with no warranty or guarantee of fit for purpose.
+// *|                See the project's LICENSE.md for details.
+// *|           Copyright (C) 2024 LSEG. All rights reserved.
+///*|----------------------------------------------------------------------------------------------------
+
 package com.refinitiv.ema.rmtes.example;
 
 import com.refinitiv.ema.access.*;
@@ -45,9 +52,12 @@ class AppClientProvider implements OmmProviderClient {
     }
 
     void processLoginRequest(ReqMsg reqMsg, OmmProviderEvent event) {
+        System.out.println("Provider: Login request accepted");
         event.provider().submit(EmaFactory.createRefreshMsg().domainType(EmaRdm.MMT_LOGIN).name(reqMsg.name()).nameType(EmaRdm.USER_NAME).
                 complete(true).solicited(true).state(OmmState.StreamState.OPEN, OmmState.DataState.OK, OmmState.StatusCode.NONE, "Login accepted").
                 attrib(EmaFactory.createElementList()), event.handle());
+
+        System.out.println("Provider: Login refresh message sent");
     }
 
     void processMarketPriceRequest(ReqMsg reqMsg, OmmProviderEvent event) {
@@ -56,7 +66,9 @@ class AppClientProvider implements OmmProviderClient {
             return;
         }
 
-        String utf8String = "简体中文";
+        System.out.println("Provider: Item request accepted");
+
+        String utf8String = "伦敦证券交易所";
 
         byte[] bytesOne = {0x1B, 0x25, 0x30};
         byte[] bytesTwo = utf8String.getBytes();
@@ -85,6 +97,7 @@ class AppClientProvider implements OmmProviderClient {
                 payload(fieldList).complete(true), event.handle());
 
         itemHandle = event.handle();
+        System.out.println("Provider: Item refresh message sent");
     }
 
     void processInvalidItemRequest(ReqMsg reqMsg, OmmProviderEvent event) {
@@ -104,7 +117,7 @@ public class RMTESProvider {
             FieldList fieldList = EmaFactory.createFieldList();
             UpdateMsg updateMsg = EmaFactory.createUpdateMsg();
 
-            System.out.println("Start IProvider Server");
+            System.out.println("Provider: Start");
             provider = EmaFactory.createOmmProvider(EmaFactory.createOmmIProviderConfig().operationModel(OmmIProviderConfig.OperationModel.USER_DISPATCH),
                     appClient);
 
@@ -113,10 +126,11 @@ public class RMTESProvider {
                 Thread.sleep(1000);
             }
 
-            String[]  utf8StringArray = {"简体中文", "繁體中文" , "日本語" ,"한국어","ภาษาไทย" };
+            String[]  utf8StringArray = {"伦敦证券交易所", "倫敦證券交易所" , "ロンドン証券取引所" ,"런던 증권 거래소","ตลาดหลักทรัพย์ลอนดอน" };
             String[]  asciiStringArray = {"Simplified Chinese", "Traditional Chinese" , "Japanese" ,"Korean", "Thai"};
             Random rand = new Random();
             int index_lang = 0;
+            System.out.println("Provider: Sending Item update messages");
             for (int index = 0; index < 60; index++) {
                 provider.dispatch(1000);
 

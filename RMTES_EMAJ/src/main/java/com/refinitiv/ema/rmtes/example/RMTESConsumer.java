@@ -1,3 +1,9 @@
+///*|----------------------------------------------------------------------------------------------------
+// *|            This source code is provided under the Apache 2.0 license
+// *|  and is provided AS IS with no warranty or guarantee of fit for purpose.
+// *|                See the project's LICENSE.md for details.
+// *|           Copyright (C) 2024 LSEG. All rights reserved.
+///*|----------------------------------------------------------------------------------------------------
 package com.refinitiv.ema.rmtes.example;
 
 import com.refinitiv.ema.access.*;
@@ -90,6 +96,7 @@ public class RMTESConsumer {
 
             OmmConsumerConfig config = EmaFactory.createOmmConsumerConfig();
 
+            System.out.println("Consumer: Start");
             consumer = EmaFactory.createOmmConsumer(config.host("localhost:14002").username("user"));
 
             ElementList view = EmaFactory.createElementList();
@@ -108,7 +115,7 @@ public class RMTESConsumer {
             view.add(EmaFactory.createElementEntry().array(EmaRdm.ENAME_VIEW_DATA, array));
 
             ReqMsg reqMsg = EmaFactory.createReqMsg();
-
+            System.out.println("Consumer: Sending Item request");
             consumer.registerClient(reqMsg.serviceName("DIRECT_FEED").name("/LSEG.L").payload(view), appClient);
 
             Thread.sleep(6000000);
