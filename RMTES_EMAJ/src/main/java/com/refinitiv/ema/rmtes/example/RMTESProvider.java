@@ -13,9 +13,15 @@ import com.refinitiv.ema.rdm.EmaRdm;
 import java.nio.ByteBuffer;
 import java.util.Random;
 
+//OmmProviderClient implemented class, for handling incoming consumer request messages from the API
 class AppClientProvider implements OmmProviderClient {
     public long itemHandle = 0;
 
+    /**
+     * Handle incoming consumer request messages (Login, Item, etc)
+     * @param reqMsg received ReqMsg ({@link com.refinitiv.ema.access.ReqMsg})
+     * @param providerEvent identifies open item for which this message is received
+     */
     public void onReqMsg(ReqMsg reqMsg, OmmProviderEvent providerEvent) {
         switch (reqMsg.domainType()) {
             case EmaRdm.MMT_LOGIN:
@@ -51,6 +57,11 @@ class AppClientProvider implements OmmProviderClient {
     public void onAllMsg(Msg msg, OmmProviderEvent providerEvent) {
     }
 
+    /**
+     * Send a Login Refresh Response message back to a consumer
+     * @param reqMsg
+     * @param event
+     */
     void processLoginRequest(ReqMsg reqMsg, OmmProviderEvent event) {
         System.out.println("Provider: Login request accepted");
         event.provider().submit(EmaFactory.createRefreshMsg().domainType(EmaRdm.MMT_LOGIN).name(reqMsg.name()).nameType(EmaRdm.USER_NAME).
@@ -60,6 +71,11 @@ class AppClientProvider implements OmmProviderClient {
         System.out.println("Provider: Login refresh message sent");
     }
 
+    /**
+     * Send an Item Refresh Response message back to a consumer
+     * @param reqMsg
+     * @param event
+     */
     void processMarketPriceRequest(ReqMsg reqMsg, OmmProviderEvent event) {
         if (itemHandle != 0) {
             processInvalidItemRequest(reqMsg, event);
@@ -69,20 +85,21 @@ class AppClientProvider implements OmmProviderClient {
         System.out.println("Provider: Item request accepted");
 
         String utf8String = "伦敦证券交易所";
-
+        // Set a byte array of RMTES three bytes escape sequence
         byte[] bytesOne = {0x1B, 0x25, 0x30};
+        // Convert our UTF8 String to a byte array
         byte[] bytesTwo = utf8String.getBytes();
+        // prepend 0x1B, 0x25, 0x30 to the UTF8 string
         byte[] byteRMTES = new byte[bytesOne.length + bytesTwo.length];
-
         ByteBuffer buffer = ByteBuffer.wrap(byteRMTES);
         buffer.put(bytesOne);
         buffer.put(bytesTwo);
         byteRMTES = buffer.array();
-
+        // Convert the RMTES byte array string into a ByteBuffer
         ByteBuffer emaBuffer = ByteBuffer.wrap(byteRMTES);
 
+        //Set Refresh Response OMM FieldList data
         FieldList fieldList = EmaFactory.createFieldList();
-
         fieldList.add(EmaFactory.createFieldEntry().ascii(3, reqMsg.name()));
         fieldList.add(EmaFactory.createFieldEntry().enumValue(15, 840));
         fieldList.add(EmaFactory.createFieldEntry().real(22, 3990, OmmReal.MagnitudeType.EXPONENT_NEG_2));
@@ -100,6 +117,11 @@ class AppClientProvider implements OmmProviderClient {
         System.out.println("Provider: Item refresh message sent");
     }
 
+    /**
+     * Handle invalid consumer request messages
+     * @param reqMsg
+     * @param event
+     */
     void processInvalidItemRequest(ReqMsg reqMsg, OmmProviderEvent event) {
         event.provider().submit(EmaFactory.createStatusMsg().name(reqMsg.name()).serviceName(reqMsg.serviceName()).
                         domainType(reqMsg.domainType()).
@@ -110,14 +132,22 @@ class AppClientProvider implements OmmProviderClient {
 }
 
 public class RMTESProvider {
+    /**
+     * Main method
+     * @param args
+     */
     public static void main(String[] args) {
+        // Crate OmmProvider class
         OmmProvider provider = null;
         try {
+            // Initiate Provider AppClient class
             AppClientProvider appClient = new AppClientProvider();
+
             FieldList fieldList = EmaFactory.createFieldList();
             UpdateMsg updateMsg = EmaFactory.createUpdateMsg();
 
             System.out.println("Provider: Start");
+            // Start OMM Provider
             provider = EmaFactory.createOmmProvider(EmaFactory.createOmmIProviderConfig().operationModel(OmmIProviderConfig.OperationModel.USER_DISPATCH),
                     appClient);
 
@@ -131,6 +161,7 @@ public class RMTESProvider {
             Random rand = new Random();
             int index_lang = 0;
             System.out.println("Provider: Sending Item update messages");
+            // Sending Update messages
             for (int index = 0; index < 60; index++) {
                 provider.dispatch(1000);
 
@@ -156,16 +187,23 @@ public class RMTESProvider {
         }
     }
 
+    /**
+     * Create RMTES ByteBuffer with the input UTF8 STring
+     * @param utf8Message
+     * @return
+     */
     private static ByteBuffer encodeRMTES (String utf8Message){
+        // Set a byte array of RMTES three bytes escape sequence
         byte[] bytesOne = {0x1B, 0x25, 0x30};
+        // Convert our UTF8 String to a byte array
         byte[] bytesTwo = utf8Message.getBytes();
+        // prepend 0x1B, 0x25, 0x30 to the UTF8 string
         byte[] byteRMTES = new byte[bytesOne.length + bytesTwo.length];
-
         ByteBuffer buffer = ByteBuffer.wrap(byteRMTES);
         buffer.put(bytesOne);
         buffer.put(bytesTwo);
         byteRMTES = buffer.array();
-
+        // Convert the RMTES byte array string into a ByteBuffer
         return ByteBuffer.wrap(byteRMTES);
     }
 }

@@ -9,7 +9,14 @@ package com.refinitiv.ema.rmtes.example;
 import com.refinitiv.ema.access.*;
 import com.refinitiv.ema.rdm.EmaRdm;
 
+//OmmConsumerClient implemented class, for handling incoming messages from the API
 class AppClientConsumer implements OmmConsumerClient {
+
+    /**
+     * Handle incoming Refresh Response message from the API
+     * @param refreshMsg received RefreshMsg ({@link com.refinitiv.ema.access.RefreshMsg})
+     * @param event identifies open item for which this message is received
+     */
     public void onRefreshMsg(RefreshMsg refreshMsg, OmmConsumerEvent event) {
         System.out.println("Refresh Message: ");
         System.out.printf("Item Name: %s%n", (refreshMsg.hasName() ? refreshMsg.name() : "<not set>") );
@@ -17,24 +24,35 @@ class AppClientConsumer implements OmmConsumerClient {
 
         System.out.printf("Item State: %s%n", refreshMsg.state());
 
-
+        // Decoding incoming FieldList data
         if (DataType.DataTypes.FIELD_LIST == refreshMsg.payload().dataType())
             decode(refreshMsg.payload().fieldList());
 
         System.out.println();
     }
 
+    /**
+     * Handle incoming Update Response messages from the API
+     * @param updateMsg received UpdateMsg ({@link com.refinitiv.ema.access.UpdateMsg})
+     * @param event identifies open item for which this message is received
+     */
     public void onUpdateMsg(UpdateMsg updateMsg, OmmConsumerEvent event) {
         System.out.println("Update Message: ");
         System.out.printf("Item Name: %s%n", (updateMsg.hasName() ? updateMsg.name() : "<not set>"));
         System.out.printf("Service Name: %s%n", (updateMsg.hasServiceName() ? updateMsg.serviceName() : "<not set>"));
 
+        // Decoding incoming FieldList data
         if (DataType.DataTypes.FIELD_LIST == updateMsg.payload().dataType())
             decode(updateMsg.payload().fieldList());
 
         System.out.println();
     }
 
+    /**
+     * Handle incoming Status Response messages from the API
+     * @param statusMsg received StatusMsg
+     * @param event identifies open item for which this message is received
+     */
     public void onStatusMsg(StatusMsg statusMsg, OmmConsumerEvent event) {
         System.out.println("Status Message: ");
         System.out.printf("Item Name: %s%n", (statusMsg.hasName() ? statusMsg.name() : "<not set>"));
@@ -55,12 +73,17 @@ class AppClientConsumer implements OmmConsumerClient {
     public void onAllMsg(Msg msg, OmmConsumerEvent consumerEvent) {
     }
 
+    /**
+     * Decoding OMM Fieldlist object
+     * @param fieldList
+     */
     void decode(FieldList fieldList) {
         fieldList.forEach(fieldEntry -> {
             System.out.printf("Fid %d Name = %s DataType: %s Value: ", fieldEntry.fieldId(), fieldEntry.name(), DataType.asString(fieldEntry.load().dataType()));
             if (Data.DataCode.BLANK == fieldEntry.code())
                 System.out.println(" blank");
             else
+                //Handle each data type (fits to the type of requests FIDs)
                 switch (fieldEntry.loadType()) {
                     case DataType.DataTypes.REAL:
                         System.out.println(fieldEntry.real().asDouble());
@@ -86,19 +109,24 @@ class AppClientConsumer implements OmmConsumerClient {
 }
 
 public class RMTESConsumer {
-
-
-
+    /**
+     * Main method
+     * @param args
+     */
     public static void main(String[] args) {
+        // Crate OmmConsumer class
         OmmConsumer consumer = null;
         try {
+            // Initiate Consumer AppClient class
             AppClientConsumer appClient = new AppClientConsumer();
 
             OmmConsumerConfig config = EmaFactory.createOmmConsumerConfig();
 
             System.out.println("Consumer: Start");
+            // Init connection to the Provider
             consumer = EmaFactory.createOmmConsumer(config.host("localhost:14002").username("user"));
 
+            // Construct the View Request
             ElementList view = EmaFactory.createElementList();
             OmmArray array = EmaFactory.createOmmArray();
 
@@ -114,11 +142,11 @@ public class RMTESConsumer {
             view.add(EmaFactory.createElementEntry().uintValue(EmaRdm.ENAME_VIEW_TYPE, 1));
             view.add(EmaFactory.createElementEntry().array(EmaRdm.ENAME_VIEW_DATA, array));
 
-            ReqMsg reqMsg = EmaFactory.createReqMsg();
             System.out.println("Consumer: Sending Item request");
-            consumer.registerClient(reqMsg.serviceName("DIRECT_FEED").name("/LSEG.L").payload(view), appClient);
+            //Send item request message with View
+            consumer.registerClient(EmaFactory.createReqMsg().serviceName("DIRECT_FEED").name("/LSEG.L").payload(view), appClient);
 
-            Thread.sleep(6000000);
+            Thread.sleep(6000000); // API calls onRefreshMsg(), onUpdateMsg() and onStatusMsg()
         } catch (InterruptedException | OmmException excp) {
             System.out.println(excp.getMessage());
         } finally {
