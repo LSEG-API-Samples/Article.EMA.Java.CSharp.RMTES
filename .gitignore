@@ -6,6 +6,13 @@ RMTES_EMAJ/*.ipr
 
 RMTES_EMAJ/target/
 
+### Visual Studio ###
+RMTES_EMACSharp/.vs
+RMTES_EMACSharp/RMTESConsumer/bin
+RMTES_EMACSharp/RMTESConsumer/obj
+RMTES_EMACSharp/RMTESProvider/bin
+RMTES_EMACSharp/RMTESProvider/obj
+
 ### VS Code ###
 .vscode/
 

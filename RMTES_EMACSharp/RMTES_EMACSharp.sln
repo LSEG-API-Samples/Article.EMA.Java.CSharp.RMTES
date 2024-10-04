@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RMTESConsumer", "RMTESConsumer\RMTESConsumer.csproj", "{0A07B15E-7A3A-425B-A4A1-BB7491001D82}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RMTESProvider", "RMTESProvider\RMTESProvider.csproj", "{80C9CDB0-393E-4DEB-BD6B-8C02CA261FBB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0A07B15E-7A3A-425B-A4A1-BB7491001D82}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A07B15E-7A3A-425B-A4A1-BB7491001D82}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A07B15E-7A3A-425B-A4A1-BB7491001D82}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A07B15E-7A3A-425B-A4A1-BB7491001D82}.Release|Any CPU.Build.0 = Release|Any CPU
+		{80C9CDB0-393E-4DEB-BD6B-8C02CA261FBB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{80C9CDB0-393E-4DEB-BD6B-8C02CA261FBB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{80C9CDB0-393E-4DEB-BD6B-8C02CA261FBB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{80C9CDB0-393E-4DEB-BD6B-8C02CA261FBB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
