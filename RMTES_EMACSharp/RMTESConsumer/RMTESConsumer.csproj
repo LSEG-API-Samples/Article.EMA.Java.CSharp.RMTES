@@ -11,4 +11,10 @@
     <PackageReference Include="LSEG.Ema.Core" Version="3.3.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="EmaConfig.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
