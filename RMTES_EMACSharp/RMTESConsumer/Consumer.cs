@@ -98,7 +98,7 @@ class Consumer
 
             Console.WriteLine("Consumer: Start");
             // Init connection to the Provider
-            OmmConsumerConfig config = new OmmConsumerConfig().Host("localhost:14002").UserName("user");
+            OmmConsumerConfig config = new OmmConsumerConfig().UserName("user").ConsumerName("Consumer_1");
             consumer = new OmmConsumer(config);
 
             // Construct the View Request

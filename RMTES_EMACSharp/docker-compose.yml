@@ -1,0 +1,13 @@
+name: emacsharp_rmtes
+
+services:
+  provider:
+    build:
+      context: ./RMTESProvider
+      dockerfile: Dockerfile
+  consumer:
+    build:
+      context: /RMTESConsumer
+      dockerfile: Dockerfile
+    depends_on:
+      - provider
