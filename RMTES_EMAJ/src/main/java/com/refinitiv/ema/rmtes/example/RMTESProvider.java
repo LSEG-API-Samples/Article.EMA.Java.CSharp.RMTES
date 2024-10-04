@@ -13,13 +13,13 @@ import com.refinitiv.ema.rdm.EmaRdm;
 import java.nio.ByteBuffer;
 import java.util.Random;
 
-//OmmProviderClient implemented class, for handling incoming consumer request messages from the API
+// OmmProviderClient implemented class, for handling incoming consumer request messages from the API
 class AppClientProvider implements OmmProviderClient {
     public long itemHandle = 0;
 
     /**
      * Handle incoming consumer request messages (Login, Item, etc)
-     * @param reqMsg received ReqMsg ({@link com.refinitiv.ema.access.ReqMsg})
+     * @param reqMsg received request messages from Consumer
      * @param providerEvent identifies open item for which this message is received
      */
     public void onReqMsg(ReqMsg reqMsg, OmmProviderEvent providerEvent) {
@@ -59,8 +59,8 @@ class AppClientProvider implements OmmProviderClient {
 
     /**
      * Send a Login Refresh Response message back to a consumer
-     * @param reqMsg
-     * @param event
+     * @param reqMsg received Login request message from Consumer
+     * @param event identifies open item for which this message is received
      */
     void processLoginRequest(ReqMsg reqMsg, OmmProviderEvent event) {
         System.out.println("Provider: Login request accepted");
@@ -73,8 +73,8 @@ class AppClientProvider implements OmmProviderClient {
 
     /**
      * Send an Item Refresh Response message back to a consumer
-     * @param reqMsg
-     * @param event
+     * @param reqMsg received Item request from Consumer
+     * @param event identifies open item for which this message is received
      */
     void processMarketPriceRequest(ReqMsg reqMsg, OmmProviderEvent event) {
         if (itemHandle != 0) {
@@ -119,8 +119,8 @@ class AppClientProvider implements OmmProviderClient {
 
     /**
      * Handle invalid consumer request messages
-     * @param reqMsg
-     * @param event
+     * @param reqMsg received invalid Item request from Consumer
+     * @param event identifies open item for which this message is received
      */
     void processInvalidItemRequest(ReqMsg reqMsg, OmmProviderEvent event) {
         event.provider().submit(EmaFactory.createStatusMsg().name(reqMsg.name()).serviceName(reqMsg.serviceName()).
@@ -188,9 +188,9 @@ public class RMTESProvider {
     }
 
     /**
-     * Create RMTES ByteBuffer with the input UTF8 STring
-     * @param utf8Message
-     * @return
+     * Create RMTES ByteBuffer with the input UTF8 String for the update messages
+     * @param utf8Message input UTF8-String
+     * @return outgoing ByteBuffer object to send as RMTES
      */
     private static ByteBuffer encodeRMTES (String utf8Message){
         // Set a byte array of RMTES three bytes escape sequence
