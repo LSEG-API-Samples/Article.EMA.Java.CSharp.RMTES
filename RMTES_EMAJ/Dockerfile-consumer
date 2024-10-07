@@ -1,4 +1,4 @@
-FROM maven:3.9.6-eclipse-temurin-11-alpine as builder
+FROM maven:3.9.6-eclipse-temurin-11-alpine@sha256:0f36e25a2daa38721ddc15d093fe952c38ab6a44901c7d0674feadc45538f356 as builder
 LABEL authors="Developer Relations"
 ENV MAVEN_OPTS="-XX:+TieredCompilation -XX:TieredStopAtLevel=1"
 WORKDIR /app
@@ -8,7 +8,8 @@ COPY src ./src
 #RUN mvn clean -e -B package
 RUN mvn clean install -Dmaven.test.skip=true
 
-FROM eclipse-temurin:11-jre-alpine
+FROM eclipse-temurin:11-jre-alpine@sha256:eeca23b6c113f1817837d3ced7d70405db4664aade6b6f30076160e346fbbfb9
+
 WORKDIR /app
 COPY --from=builder /app/target/RMTES_EMAJ-1.0-jar-with-dependencies.jar .
 COPY EmaConfig.xml .
