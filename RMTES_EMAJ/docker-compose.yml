@@ -1,0 +1,12 @@
+name: emajava_rmtes
+
+services:
+  provider:
+    build:
+      dockerfile: Dockerfile-provider
+  consumer:
+    build:
+      dockerfile: Dockerfile-consumer
+    depends_on:
+      provider:
+        condition: service_started

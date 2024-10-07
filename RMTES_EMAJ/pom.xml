@@ -38,7 +38,7 @@
                             <archive>
                                 <manifest>
                                     <mainClass>
-                                        com.refinitiv.ema.rmtes.example.RMTESConsumer
+                                        com.refinitiv.ema.rmtes.example.RMTESProvider
                                     </mainClass>
                                 </manifest>
                             </archive>

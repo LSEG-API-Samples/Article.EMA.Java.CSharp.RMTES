@@ -1,0 +1,18 @@
+FROM maven:3.9.6-eclipse-temurin-11-alpine as builder
+LABEL authors="Developer Relations"
+ENV MAVEN_OPTS="-XX:+TieredCompilation -XX:TieredStopAtLevel=1"
+WORKDIR /app
+COPY pom.xml .
+RUN mvn dependency:go-offline -B
+COPY src ./src
+#RUN mvn clean -e -B package
+RUN mvn clean install -Dmaven.test.skip=true
+
+FROM eclipse-temurin:11-jre-alpine
+WORKDIR /app
+COPY --from=builder /app/target/RMTES_EMAJ-1.0-jar-with-dependencies.jar .
+COPY EmaConfig.xml .
+ADD etc /app/etc
+
+# run RMTES_EMAJ-1.0-jar-with-dependencies.jar for Provider with CMD
+CMD ["java", "-jar", "./RMTES_EMAJ-1.0-jar-with-dependencies.jar"]

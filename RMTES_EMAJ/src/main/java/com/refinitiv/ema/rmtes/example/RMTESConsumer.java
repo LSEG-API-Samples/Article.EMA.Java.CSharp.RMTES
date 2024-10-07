@@ -130,7 +130,7 @@ public class RMTESConsumer {
 
             System.out.println("Consumer: Start");
             // Init connection to the Provider
-            consumer = EmaFactory.createOmmConsumer(config.host("localhost:14002").username("user"));
+            consumer = EmaFactory.createOmmConsumer(config.consumerName("Consumer_1").username("user"));
 
             // Construct the View Request
             ElementList view = EmaFactory.createElementList();

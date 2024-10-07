@@ -71,7 +71,8 @@
                 <!-- TcpNodelay is optional: defaulted to 1 -->
                 <!-- possible values: 1 (tcp_nodelay option set), 0 (tcp_nodelay not set) -->
                 <TcpNodelay value="1"/>
-                <Host value="localhost"/>
+                <!--<Host value="localhost"/>-->
+                <Host value="provider"/>
                 <Port value="14002"/>
             </Channel>
         </ChannelList>
@@ -163,8 +164,8 @@
                 <!-- providers always assume DictionaryType = DictionaryType::FileDictionary -->
                 <DictionaryType value="DictionaryType::FileDictionary"/>
                 <!-- dictionary file names are optional: defaulted to ./RDMFieldDictionary and ./enumtype.def -->
-                <RdmFieldDictionaryFileName value=".\etc\RDMFieldDictionary"/>
-                <EnumTypeDefFileName value=".\etc\enumtype.def"/>
+                <RdmFieldDictionaryFileName value="./etc/RDMFieldDictionary"/>
+                <EnumTypeDefFileName value="./etc/enumtype.def"/>
                 <!-- <dictionary>ItemName represents the names shown in DictionariesProvided and DictionariesUsed
                     elements of the Directory InfoFilter -->
                 <!-- <dictionary>ItemName is optional; default values are "RWFFld" for the RdmFieldDictionary

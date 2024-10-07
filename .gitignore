@@ -1,5 +1,14 @@
 ### IntelliJ IDEA ###
-RMTES_EMAJ/.idea
+#RMTES_EMAJ/.idea
+RMTES_EMAJ/.idea/workspace.xml
+RMTES_EMAJ/.idea/tasks.xml
+RMTES_EMAJ/.idea/modules.xml
+RMTES_EMAJ/.idea/jarRepositories.xml
+RMTES_EMAJ/.idea/compiler.xml
+RMTES_EMAJ/.idea/libraries/
+RMTES_EMAJ/.idea/**/usage.statistics.xml
+RMTES_EMAJ/.idea/**/dictionaries
+RMTES_EMAJ/.idea/**/shelf
 RMTES_EMAJ/*.iws
 RMTES_EMAJ/*.iml
 RMTES_EMAJ/*.ipr
@@ -18,3 +27,5 @@ RMTES_EMACSharp/RMTESProvider/obj
 
 ### Mac OS ###
 .DS_Store
+
+note.txt

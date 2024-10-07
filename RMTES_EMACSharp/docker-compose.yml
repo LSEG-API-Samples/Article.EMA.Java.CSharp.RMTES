@@ -10,4 +10,5 @@ services:
       context: /RMTESConsumer
       dockerfile: Dockerfile
     depends_on:
-      - provider
+      provider:
+        condition: service_started
