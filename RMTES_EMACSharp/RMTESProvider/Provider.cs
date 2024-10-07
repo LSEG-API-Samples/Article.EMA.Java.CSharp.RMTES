@@ -15,7 +15,9 @@ using System.Threading;
 using LSEG.Ema.Access;
 using LSEG.Ema.Rdm;
 
-// IOmmProviderClient implemented class, for handling incoming consumer request messages from the API
+/// <summary>
+/// IOmmProviderClient implemented class, for handling incoming consumer request messages from the API
+/// </summary>
 internal class AppClientProvider: IOmmProviderClient
 {
     public long ItemHandle = 0;
@@ -118,9 +120,15 @@ internal class AppClientProvider: IOmmProviderClient
     }
 }
 
+/// <summary>
+/// Main Provider class
+/// </summary>
 class Provider
 {
-
+    /// <summary>
+    /// Main method
+    /// </summary>
+    /// <param name="args"></param>
     static void Main(string[] args)
     {
         // Crate OmmProvider class

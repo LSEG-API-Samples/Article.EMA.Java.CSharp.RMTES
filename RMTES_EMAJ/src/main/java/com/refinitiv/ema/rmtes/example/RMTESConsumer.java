@@ -9,12 +9,15 @@ package com.refinitiv.ema.rmtes.example;
 import com.refinitiv.ema.access.*;
 import com.refinitiv.ema.rdm.EmaRdm;
 
-//OmmConsumerClient implemented class, for handling incoming messages from the API
+
+/**
+ *  OmmConsumerClient implemented class, for handling incoming messages from the API
+ */
 class AppClientConsumer implements OmmConsumerClient {
 
     /**
      * Handle incoming Refresh Response message from the API
-     * @param refreshMsg received RefreshMsg ({@link com.refinitiv.ema.access.RefreshMsg})
+     * @param refreshMsg received Refresh response message from the Provider
      * @param event identifies open item for which this message is received
      */
     public void onRefreshMsg(RefreshMsg refreshMsg, OmmConsumerEvent event) {
@@ -33,7 +36,7 @@ class AppClientConsumer implements OmmConsumerClient {
 
     /**
      * Handle incoming Update Response messages from the API
-     * @param updateMsg received UpdateMsg ({@link com.refinitiv.ema.access.UpdateMsg})
+     * @param updateMsg received Update response messages from the Provider
      * @param event identifies open item for which this message is received
      */
     public void onUpdateMsg(UpdateMsg updateMsg, OmmConsumerEvent event) {
@@ -50,7 +53,7 @@ class AppClientConsumer implements OmmConsumerClient {
 
     /**
      * Handle incoming Status Response messages from the API
-     * @param statusMsg received StatusMsg
+     * @param statusMsg received Status response messages from the Provider
      * @param event identifies open item for which this message is received
      */
     public void onStatusMsg(StatusMsg statusMsg, OmmConsumerEvent event) {
@@ -59,7 +62,7 @@ class AppClientConsumer implements OmmConsumerClient {
         System.out.printf("Service Name: %s%n", (statusMsg.hasServiceName() ? statusMsg.serviceName() : "<not set>"));
 
         if (statusMsg.hasState())
-            System.out.println("Item State: " +statusMsg.state());
+            System.out.printf("Item State: %s%n", statusMsg.state());
 
         System.out.println();
     }
@@ -75,7 +78,7 @@ class AppClientConsumer implements OmmConsumerClient {
 
     /**
      * Decoding OMM Fieldlist object
-     * @param fieldList
+     * @param fieldList incoming OMMFieldList object from the Provider
      */
     void decode(FieldList fieldList) {
         fieldList.forEach(fieldEntry -> {
@@ -108,6 +111,9 @@ class AppClientConsumer implements OmmConsumerClient {
     }
 }
 
+/**
+ * Main Consumer class
+ */
 public class RMTESConsumer {
     /**
      * Main method

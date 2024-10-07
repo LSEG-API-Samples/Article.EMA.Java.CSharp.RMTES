@@ -131,6 +131,9 @@ class AppClientProvider implements OmmProviderClient {
 
 }
 
+/**
+ * Main Provider class
+ */
 public class RMTESProvider {
     /**
      * Main method
