@@ -72,7 +72,7 @@ internal class AppClientProvider: IOmmProviderClient
 
         Console.WriteLine("Provider: Item request accepted");
 
-        string utf8String = "伦敦证券交易所";
+        string utf8String = "伦敦证券交易所"; //Simplified Chinese
         // Set a byte array of RMTES three bytes escape sequence
         var bytesOne = new byte[] { 0x1B, 0x25, 0x30 };
         // Convert our UTF8 String to a byte array

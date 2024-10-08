@@ -15,6 +15,30 @@ This article is a sequel to my colleague's [Encoding and Decoding non-ASCII text
 
 I am demonstrating with RTSDK Java 2.2.2.L1 (EMA Java 3.8.2.0) and RTSDK C# 2.2.2.L1 (EMA C# 3.3.3.0). 
 
+## RMTES Recap: What is RMTES?
+
+There are some fields on the data dictionary (*RDMFieldDictionary*) that use the **RMTES_String** data type. This data type is designed to use with local language (non-ASCII text) such as Chinese, Korean, Thai, etc. 
+
+Example RMTES_String field:
+
+```ini
+DSPLY_NMLL "LCL LANG DSP NM"     1352  NULL        ALPHANUMERIC       32  RMTES_STRING    32
+```
+
+### RMTES Encoding
+
+RMTES uses [ISO 2022](https://www.iso20022.org/) escape sequences to select the character sets used. RMTES provides support for Reuters Basic Character Set (RBCS), UTF-8, Japanese Latin and Katakana (JIS C 6220 - 1969), Japanese Kanji (JIS X 0208 - 1990), and Chinese National Standard (CNS 11643-1986). RMTES also supports sequences for character repetition and sequences for partial updates. 
+
+Although there is no open RMTES encoder library provide for external developers, they can use the switching function provided for encoding RMTES string and switching from default ISO 2022 scheme to UTF-8 character set. That mean developers can use the UTF-8 character set to publish data for RMTES field type and then publish that string to the Real-Time system.
+
+The switching function uses the first three bytes of the text as the escape sequence. The Real-Time Distribution System components use them for the text encoded with UTF-8. Those three bytes are **1B 25 30** as follows:
+
+```txt
+0x1B 0x25 0x30
+```
+
+An application can prepend 0x1B, 0x25, 0x30 to the UTF8 string and encode that way as an RMTES type. The escape sequence characters indicate to the RMTES parser or decoder that it’s supposed to be a UTF-8 string.
+
 ## <a id="prerequisite"></a>Prerequisite
 
 Before I am going further, there is some prerequisite, dependencies, and libraries that the project is needed.
