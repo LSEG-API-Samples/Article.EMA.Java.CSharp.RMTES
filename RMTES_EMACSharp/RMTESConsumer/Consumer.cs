@@ -27,7 +27,7 @@ internal class AppClient : IOmmConsumerClient
     public void OnRefreshMsg(RefreshMsg refreshMsg, IOmmConsumerEvent consumerEvent)
     {
         Console.WriteLine("Refresh Message:");
-        Console.WriteLine("Service Name: " + (refreshMsg.HasServiceName ? refreshMsg.ServiceName() : "<not set>"));
+        Console.WriteLine($"Item Name: " + (refreshMsg.HasName ? refreshMsg.Name() : "<not set>"));
         Console.WriteLine($"Service Name: {(refreshMsg.HasServiceName ? refreshMsg.ServiceName() : "<not set>")}");
 
         Console.WriteLine($"Item State: {refreshMsg.State()}");
@@ -46,7 +46,7 @@ internal class AppClient : IOmmConsumerClient
     public void OnUpdateMsg(UpdateMsg updateMsg, IOmmConsumerEvent consumerEvent)
     {
         Console.WriteLine("Update Message:");
-        Console.WriteLine("Service Name: " + (updateMsg.HasServiceName ? updateMsg.ServiceName() : "<not set>"));
+        Console.WriteLine($"Item Name: " + (updateMsg.HasName ? updateMsg.Name() : "<not set>"));
         Console.WriteLine($"Service Name: {(updateMsg.HasServiceName ? updateMsg.ServiceName() : "<not set>")}");
  
 
@@ -64,7 +64,7 @@ internal class AppClient : IOmmConsumerClient
     public void OnStatusMsg(StatusMsg statusMsg, IOmmConsumerEvent consumerEvent)
     {
         Console.WriteLine("Status Message:");
-        Console.WriteLine("Service Name: " + (statusMsg.HasServiceName ? statusMsg.ServiceName() : "<not set>"));
+        Console.WriteLine($"Item Name: " + (statusMsg.HasName ? statusMsg.Name() : "<not set>"));
         Console.WriteLine($"Service Name: {(statusMsg.HasServiceName ? statusMsg.ServiceName() : "<not set>")}");
 
 

@@ -100,14 +100,14 @@ class AppClientProvider implements OmmProviderClient {
 
         //Set Refresh Response OMM FieldList data
         FieldList fieldList = EmaFactory.createFieldList();
-        fieldList.add(EmaFactory.createFieldEntry().ascii(3, reqMsg.name()));
-        fieldList.add(EmaFactory.createFieldEntry().enumValue(15, 840));
-        fieldList.add(EmaFactory.createFieldEntry().real(22, 3990, OmmReal.MagnitudeType.EXPONENT_NEG_2));
-        fieldList.add(EmaFactory.createFieldEntry().real(25, 3994, OmmReal.MagnitudeType.EXPONENT_NEG_2));
-        fieldList.add(EmaFactory.createFieldEntry().real(30, 9, OmmReal.MagnitudeType.EXPONENT_0));
-        fieldList.add(EmaFactory.createFieldEntry().real(31, 19, OmmReal.MagnitudeType.EXPONENT_0));
+        fieldList.add(EmaFactory.createFieldEntry().ascii(3, reqMsg.name())); //DSPLY_NAME
+        fieldList.add(EmaFactory.createFieldEntry().enumValue(15, 840)); //CURRENCY 
+        fieldList.add(EmaFactory.createFieldEntry().real(22, 3990, OmmReal.MagnitudeType.EXPONENT_NEG_2)); //BID   
+        fieldList.add(EmaFactory.createFieldEntry().real(25, 3994, OmmReal.MagnitudeType.EXPONENT_NEG_2)); //ASK
+        fieldList.add(EmaFactory.createFieldEntry().real(30, 9, OmmReal.MagnitudeType.EXPONENT_0)); //BIDSIZE
+        fieldList.add(EmaFactory.createFieldEntry().real(31, 19, OmmReal.MagnitudeType.EXPONENT_0)); //ASKSIZE
         fieldList.add(EmaFactory.createFieldEntry().ascii(260, "Simplified Chinese")); //SEG_FORW
-        fieldList.add(EmaFactory.createFieldEntry().rmtes(1352, emaBuffer));
+        fieldList.add(EmaFactory.createFieldEntry().rmtes(1352, emaBuffer)); //DSPLY_NMLL
 
         event.provider().submit(EmaFactory.createRefreshMsg().serviceName(reqMsg.serviceName()).name(reqMsg.name()).
                 state(OmmState.StreamState.OPEN, OmmState.DataState.OK, OmmState.StatusCode.NONE, "Refresh Completed").solicited(true).
@@ -172,12 +172,12 @@ public class RMTESProvider {
                 ByteBuffer emaBuffer = encodeRMTES(utf8StringArray[index_lang]);
 
                 fieldList.clear();
-                fieldList.add(EmaFactory.createFieldEntry().real(22, 3991 + index, OmmReal.MagnitudeType.EXPONENT_NEG_2));
-                fieldList.add(EmaFactory.createFieldEntry().real(25, 3994 + index, OmmReal.MagnitudeType.EXPONENT_NEG_2));
-                fieldList.add(EmaFactory.createFieldEntry().real(30, 10 + index, OmmReal.MagnitudeType.EXPONENT_0));
-                fieldList.add(EmaFactory.createFieldEntry().real(31, 19 + index, OmmReal.MagnitudeType.EXPONENT_0));
+                fieldList.add(EmaFactory.createFieldEntry().real(22, 3991 + index, OmmReal.MagnitudeType.EXPONENT_NEG_2)); //BID 
+                fieldList.add(EmaFactory.createFieldEntry().real(25, 3994 + index, OmmReal.MagnitudeType.EXPONENT_NEG_2)); //ASK
+                fieldList.add(EmaFactory.createFieldEntry().real(30, 10 + index, OmmReal.MagnitudeType.EXPONENT_0)); //BIDSIZE
+                fieldList.add(EmaFactory.createFieldEntry().real(31, 19 + index, OmmReal.MagnitudeType.EXPONENT_0)); //ASKSIZE
                 fieldList.add(EmaFactory.createFieldEntry().ascii(260, asciiStringArray[index_lang])); //SEG_FORW
-                fieldList.add(EmaFactory.createFieldEntry().rmtes(1352, emaBuffer));
+                fieldList.add(EmaFactory.createFieldEntry().rmtes(1352, emaBuffer)); //DSPLY_NMLL
 
                 provider.submit(updateMsg.clear().payload(fieldList), appClient.itemHandle);
 

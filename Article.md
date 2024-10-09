@@ -49,7 +49,7 @@ Like my colleague's statement on the [original article](https://developers.lseg.
 
 ### EMA C# 
 
-The code is based on the EMA C# [130_MP_UserDispatch](https://github.com/Refinitiv/Real-Time-SDK/tree/master/CSharp/Ema/Examples/Training/IProvider/100_Series/130_MP_UserDispatch) example.
+So, I will start off with the EMA C# OMM Provider application. The code is based on the EMA C# [130_MP_UserDispatch](https://github.com/Refinitiv/Real-Time-SDK/tree/master/CSharp/Ema/Examples/Training/IProvider/100_Series/130_MP_UserDispatch) example.
 
 I am modifying the *AppClientProvider class* ```ProcessMarketPriceRequest()``` method to publish the following text data to downstream components:
 
@@ -61,7 +61,7 @@ The first step is to create a variable to store our UTF-8 string. And then prepe
 ```C#
 void ProcessMarketPriceRequest(RequestMsg reqMsg, IOmmProviderEvent providerEvent)
 {
-    ..
+    // ...
     string utf8String = "伦敦证券交易所"; //Simplified Chinese
      // Set a byte array of RMTES three bytes escape sequence
     var bytesOne = new byte[] { 0x1B, 0x25, 0x30 };
@@ -78,7 +78,176 @@ void ProcessMarketPriceRequest(RequestMsg reqMsg, IOmmProviderEvent providerEven
 
 Now, the ```byteRMTES``` variable stores the RMTES data and ready to publish to downstream applications. 
 
-The EMA C# FieldList data supports RMTES via the ```AddRmtes(int fieldId,EmaBuffer value)``` method, so an application needs to convert the ```bytesRMTES``` variable to the ```EmaBuffer``` object before construct the Refresh Response message payload.
+The EMA C# FieldList object supports RMTES via the ```AddRmtes(int fieldId,EmaBuffer value)``` method, so an application needs to convert the ```bytesRMTES``` variable to the ```EmaBuffer``` object before construct the Refresh Response message payload.
 
 ```C#
+// Convert the RMTES byte array string into a EmaBuffer
+EmaBuffer emaBuffer = new();
+emaBuffer.CopyFrom(byteRMTES);
+
+FieldList fieldList = new FieldList();
+//Additional ENUM, REAL fields
+// ...
+fieldList.AddAscii(260, "Simplified Chinese"); //SEG_FORW 
+fieldList.AddRmtes(1352, emaBuffer); //DSPLY_NMLL
+
+providerEvent.Provider.Submit(new RefreshMsg()
+    .Name(reqMsg.Name()).ServiceName(reqMsg.ServiceName())
+    .Solicited(true)
+    .State(OmmState.StreamStates.OPEN, OmmState.DataStates.OK, OmmState.StatusCodes.NONE, "Refresh Completed")
+    .Payload(fieldList.Complete()).Complete(true),
+    providerEvent.Handle);
+
+ItemHandle = providerEvent.Handle;
 ```
+
+I also modified the *Provider.cs* file to send UTF-8 String for Simplified Chinese, Traditional Chinese, Japanese, Korean, and Thai languages messages randomly to downstream applications via the Update messages.
+
+```C#
+static void Main(string[] args)
+{
+    ..
+    string[] utf8StringArray = { "伦敦证券交易所", "倫敦證券交易所", "ロンドン証券取引所", "런던 증권 거래소", "ตลาดหลักทรัพย์ลอนดอน" };
+    string[] asciiStringArray = { "Simplified Chinese", "Traditional Chinese", "Japanese", "Korean", "Thai" };
+    Random rnd = new Random();
+    int index_lang = 0;
+    EmaBuffer emaBuffer = new();
+            
+    while (DateTime.Now < endTime)
+    {
+        provider.Dispatch(1000);
+
+        index_lang = rnd.Next(5);
+        emaBuffer = EncodeRMTES(utf8StringArray[index_lang], emaBuffer);
+        fieldList.Clear();
+        // ...
+        fieldList.AddAscii(260, asciiStringArray[index_lang]); //SEG_FORW 
+        fieldList.AddRmtes(1352, emaBuffer); //DSPLY_NMLL
+
+        provider.Submit(new UpdateMsg().Payload(fieldList.Complete()), appClient.ItemHandle);
+        count++;
+        // ...
+    }   
+    ..
+}
+
+// Create RMTES ByteBuffer with the input UTF8 String for the update messages
+private static EmaBuffer EncodeRMTES (string utf8Message, EmaBuffer emaBuffer)
+{
+    // Set a byte array of RMTES three bytes escape sequence
+    var bytesOne = new byte[] { 0x1B, 0x25, 0x30 };
+    // Convert our UTF8 String to a byte array
+    var bytesTwo = Encoding.UTF8.GetBytes(utf8Message);
+    // prepend 0x1B, 0x25, 0x30 to the UTF8 string
+    byte[] byteRMTES = new byte[bytesOne.Length + bytesTwo.Length];
+    for (int i = 0; i < byteRMTES.Length; ++i)
+    {
+        byteRMTES[i] = i < bytesOne.Length ? bytesOne[i] : bytesTwo[i - bytesOne.Length];
+    }
+    // Convert the RMTES byte array string into a ByteBuffer
+    emaBuffer.Clear();
+    return emaBuffer.CopyFrom(byteRMTES);
+}
+```
+
+That covers the EMA C# for publishing RMTES data.
+
+### EMA Java 
+
+Moving on to the EMA Java. The code is based on the EMA Java [ex130_MP_UserDispatch](https://github.com/Refinitiv/Real-Time-SDK/tree/master/Java/Ema/Examples/src/main/java/com/refinitiv/ema/examples/training/iprovider/series100/ex130_MP_UserDispatch) example which is equivalent to the EMA C# API. The modification on the *RMTESProvider.java* has the same business logic as the EMA C# *Provider.cs* example explained above.
+
+The first step is to create a variable to store our UTF-8 string. And then prepend the **1B 25 30** escape sequence bytes to the UTF-8 string bytes array.
+
+```Java
+void processMarketPriceRequest(ReqMsg reqMsg, OmmProviderEvent event) {
+    // ...
+    String utf8String = "伦敦证券交易所";
+    // Set a byte array of RMTES three bytes escape sequence
+    byte[] bytesOne = {0x1B, 0x25, 0x30};
+    // Convert our UTF8 String to a byte array
+    byte[] bytesTwo = utf8String.getBytes();
+    // prepend 0x1B, 0x25, 0x30 to the UTF8 string
+    byte[] byteRMTES = new byte[bytesOne.length + bytesTwo.length];
+    ByteBuffer buffer = ByteBuffer.wrap(byteRMTES);
+    buffer.put(bytesOne);
+    buffer.put(bytesTwo);
+    byteRMTES = buffer.array();
+}
+```
+
+The EMA Java FieldList object supports RMTES via the ```FieldEntry.rmtes​(int fieldId, java.nio.ByteBuffer value)``` method, so an application needs to convert the ```bytesRMTES``` variable to the Java ```ByteBuffer``` object before construct the Refresh Response message payload.
+
+```Java
+// Convert the RMTES byte array string into a ByteBuffer
+ByteBuffer emaBuffer = ByteBuffer.wrap(byteRMTES);
+
+//Set Refresh Response OMM FieldList data
+FieldList fieldList = EmaFactory.createFieldList();
+//Additional ENUM, REAL fields
+fieldList.add(EmaFactory.createFieldEntry().ascii(260, "Simplified Chinese")); //SEG_FORW
+fieldList.add(EmaFactory.createFieldEntry().rmtes(1352, emaBuffer)); //DSPLY_NMLL
+
+event.provider().submit(EmaFactory.createRefreshMsg().serviceName(reqMsg.serviceName()).name(reqMsg.name()).
+        state(OmmState.StreamState.OPEN, OmmState.DataState.OK, OmmState.StatusCode.NONE, "Refresh Completed").solicited(true).
+        payload(fieldList).complete(true), event.handle());
+
+itemHandle = event.handle();
+```
+
+The *RMTESProvider.java* file also has been added a logic to send UTF-8 String for Simplified Chinese, Traditional Chinese, Japanese, Korean, and Thai languages messages randomly to downstream applications via the Update messages. The source code logic is the same as the EMA C# API. Please find more detail on the source code project on the [GitHub repository](https://github.com/LSEG-API-Samples/Article.EMA.Java.CSharp.RMTES/tree/main/RMTES_EMAJ).
+
+That covers how to publish the RMTES string data.
+
+## Decoding RMTES
+
+The EMA APIs (C++, Java, and C#) generally provided RMTES converter or parser interface for converting the encoded RMTES string payload received as part of the OMM data to a Unicode string. It helps display news in international languages with UCS2 format or transfer data through the network in ISO 2022 and UTF-8. The following section will provide a guideline for applications that want to display non-ASCII string correctly.
+
+### Displaying non-ASCII RMTES string in EMA C# Consumer application
+
+If application wants to decode RMTES field and do not need to works with the partial update, it can just call the ```LSEG.Ema.Access.FieldEntry.OmmRmtesValue()``` method to get OmmRmtes object that represents RMTES string value.
+
+```C#
+// Consumer.cs
+// Decoding FieldEntry
+foreach (FieldEntry fieldEntry in fieldList)
+{
+    Console.Write($"Fid: {fieldEntry.FieldId} Name = {fieldEntry.Name} DataType: {DataType.AsString(fieldEntry.Load!.DataType)} Value: ");
+
+    if (Data.DataCode.BLANK == fieldEntry.Code)
+                Console.WriteLine(" blank");
+    else
+        // Handle each data type (fits to the type of requests FIDs)
+        switch (fieldEntry.LoadType)
+        {
+            // ...
+            case DataTypes.RMTES:
+                Console.WriteLine(fieldEntry.OmmRmtesValue());
+                break;
+            default:
+                Console.WriteLine();
+                break;
+        }
+}
+```
+
+```Java
+// RMTESConsumer.java
+// Decoding FieldEntry
+fieldList.forEach(fieldEntry -> {
+    System.out.printf("Fid %d Name = %s DataType: %s Value: ", fieldEntry.fieldId(), fieldEntry.name(), DataType.asString(fieldEntry.load().dataType()));
+    if (Data.DataCode.BLANK == fieldEntry.code())
+        System.out.println(" blank");
+    else
+        //Handle each data type (fits to the type of requests FIDs)
+        switch (fieldEntry.loadType()) {
+            //...
+            case DataType.DataTypes.RMTES:
+                System.out.println(fieldEntry.rmtes());
+                break;
+            default:
+                System.out.println();
+                break;
+        }
+        });
+```
+

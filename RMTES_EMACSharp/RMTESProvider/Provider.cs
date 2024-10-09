@@ -83,15 +83,17 @@ internal class AppClientProvider: IOmmProviderClient
         {
             byteRMTES[i] = i < bytesOne.Length ? bytesOne[i] : bytesTwo[i - bytesOne.Length];
         }
-        // Convert the RMTES byte array string into a ByteBuffer
+        // Convert the RMTES byte array string into a EmaBufer object
         EmaBuffer emaBuffer = new();
         emaBuffer.CopyFrom(byteRMTES);
 
         FieldList fieldList = new FieldList();
-        fieldList.AddReal(22, 3990, OmmReal.MagnitudeTypes.EXPONENT_NEG_2);
-        fieldList.AddReal(25, 3994, OmmReal.MagnitudeTypes.EXPONENT_NEG_2);
-        fieldList.AddReal(30, 9, OmmReal.MagnitudeTypes.EXPONENT_0);
-        fieldList.AddReal(31, 19, OmmReal.MagnitudeTypes.EXPONENT_0);
+        fieldList.AddAscii(3, reqMsg.Name()); //DSPLY_NAME
+        fieldList.AddEnumValue(15, 840); //CURRENCY 
+        fieldList.AddReal(22, 3990, OmmReal.MagnitudeTypes.EXPONENT_NEG_2); //BID   
+        fieldList.AddReal(25, 3994, OmmReal.MagnitudeTypes.EXPONENT_NEG_2); //ASK
+        fieldList.AddReal(30, 9, OmmReal.MagnitudeTypes.EXPONENT_0); //BIDSIZE
+        fieldList.AddReal(31, 19, OmmReal.MagnitudeTypes.EXPONENT_0); //ASKSIZE
         fieldList.AddAscii(260, "Simplified Chinese"); //SEG_FORW 
         fieldList.AddRmtes(1352, emaBuffer); //DSPLY_NMLL
 
@@ -167,8 +169,10 @@ class Provider
                 index_lang = rnd.Next(5);
                 emaBuffer = EncodeRMTES(utf8StringArray[index_lang], emaBuffer);
                 fieldList.Clear();
-                fieldList.AddReal(22, 3991 + count, OmmReal.MagnitudeTypes.EXPONENT_NEG_2);
-                fieldList.AddReal(30, 10 + count, OmmReal.MagnitudeTypes.EXPONENT_0);
+                fieldList.AddReal(22, 3991 + count, OmmReal.MagnitudeTypes.EXPONENT_NEG_2); //BID 
+                fieldList.AddReal(25, 3994 + count, OmmReal.MagnitudeTypes.EXPONENT_NEG_2); //ASK
+                fieldList.AddReal(30, 10 + count, OmmReal.MagnitudeTypes.EXPONENT_0); //BIDSIZE
+                fieldList.AddReal(31, 19 + count, OmmReal.MagnitudeTypes.EXPONENT_0); //ASKSIZE
                 fieldList.AddAscii(260, asciiStringArray[index_lang]); //SEG_FORW 
                 fieldList.AddRmtes(1352, emaBuffer); //DSPLY_NMLL
 
@@ -206,7 +210,7 @@ class Provider
         {
             byteRMTES[i] = i < bytesOne.Length ? bytesOne[i] : bytesTwo[i - bytesOne.Length];
         }
-        // Convert the RMTES byte array string into a ByteBuffer
+        // Convert the RMTES byte array string into a EmaBufer object
         emaBuffer.Clear();
         return emaBuffer.CopyFrom(byteRMTES);
     }
