@@ -19,6 +19,8 @@ using LSEG.Ema.Rdm;
 /// </summary>
 internal class AppClient : IOmmConsumerClient
 {
+    private readonly RmtesBuffer rmtesBuffer = new(new byte[0]);
+
     /// <summary>
     /// Handle incoming Refresh Response message from the API
     /// </summary>
@@ -80,6 +82,11 @@ internal class AppClient : IOmmConsumerClient
     /// <param name="fieldList">incoming OMMFieldList object from the Provider</param>
     void Decode(FieldList fieldList)
     {
+        // In the below loop partial updates for the specific field of RMTES type are handled.
+        // Note that in case it is necessary to handle partial updates for multiple fields,
+        // the application has to cache each RMTES string in a separate RmtesBuffer
+        // (e.g., use a hashmap to track RmtesBuffer instances corresponding to specific FIDs)
+        // and apply the updates accordingly.
         foreach (FieldEntry fieldEntry in fieldList)
         {
             Console.Write($"Fid: {fieldEntry.FieldId} Name = {fieldEntry.Name} DataType: {DataType.AsString(fieldEntry.Load!.DataType)} Value: ");
@@ -100,7 +107,10 @@ internal class AppClient : IOmmConsumerClient
                         Console.WriteLine(fieldEntry.HasEnumDisplay ? fieldEntry.EnumDisplay() : fieldEntry.EnumValue());
                         break;
                     case DataTypes.RMTES:
-                        Console.WriteLine(fieldEntry.OmmRmtesValue());
+                        // If an application just cache RMTESBuffer objects and apply all received changes to them.
+                        Console.WriteLine(rmtesBuffer.Apply(fieldEntry.OmmRmtesValue()).ToString());
+                        // If an application just wants to decode RMTES Field
+                        //Console.WriteLine(fieldEntry.OmmRmtesValue());
                         break;
                     case DataTypes.ERROR:
                         Console.WriteLine($"({fieldEntry.OmmErrorValue().ErrorCodeAsString()})");

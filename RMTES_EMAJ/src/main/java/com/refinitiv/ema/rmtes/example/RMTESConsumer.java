@@ -6,7 +6,25 @@
 ///*|----------------------------------------------------------------------------------------------------
 package com.refinitiv.ema.rmtes.example;
 
-import com.refinitiv.ema.access.*;
+//import com.refinitiv.ema.access.*;
+import com.refinitiv.ema.access.Msg;
+import com.refinitiv.ema.access.AckMsg;
+import com.refinitiv.ema.access.GenericMsg;
+import com.refinitiv.ema.access.RefreshMsg;
+import com.refinitiv.ema.access.RmtesBuffer;
+import com.refinitiv.ema.access.StatusMsg;
+import com.refinitiv.ema.access.UpdateMsg;
+import com.refinitiv.ema.access.Data;
+import com.refinitiv.ema.access.DataType;
+import com.refinitiv.ema.access.EmaFactory;
+import com.refinitiv.ema.access.FieldList;
+import com.refinitiv.ema.access.ElementList;
+import com.refinitiv.ema.access.OmmArray;
+import com.refinitiv.ema.access.OmmConsumer;
+import com.refinitiv.ema.access.OmmConsumerClient;
+import com.refinitiv.ema.access.OmmConsumerEvent;
+import com.refinitiv.ema.access.OmmException;
+import com.refinitiv.ema.access.OmmConsumerConfig;
 import com.refinitiv.ema.rdm.EmaRdm;
 
 
@@ -14,6 +32,8 @@ import com.refinitiv.ema.rdm.EmaRdm;
  *  OmmConsumerClient implemented class, for handling incoming messages from the API
  */
 class AppClientConsumer implements OmmConsumerClient {
+
+    private RmtesBuffer rmtesBuffer = EmaFactory.createRmtesBuffer();
 
     /**
      * Handle incoming Refresh Response message from the API
@@ -81,6 +101,11 @@ class AppClientConsumer implements OmmConsumerClient {
      * @param fieldList incoming OMMFieldList object from the Provider
      */
     void decode(FieldList fieldList) {
+        // In the below loop partial updates for the specific field of RMTES type are handled.
+		// Note that in case it is necessary to handle partial updates for multiple fields,
+		// the application has to cache each RMTES string in a separate RmtesBuffer
+		// (e.g., use a hashmap to track RmtesBuffer instances corresponding to specific FIDs)
+		// and apply the updates accordingly.
         fieldList.forEach(fieldEntry -> {
             System.out.printf("Fid %d Name = %s DataType: %s Value: ", fieldEntry.fieldId(), fieldEntry.name(), DataType.asString(fieldEntry.load().dataType()));
             if (Data.DataCode.BLANK == fieldEntry.code())
@@ -98,7 +123,10 @@ class AppClientConsumer implements OmmConsumerClient {
                         System.out.println(fieldEntry.hasEnumDisplay() ? fieldEntry.enumDisplay() : fieldEntry.enumValue());
                         break;
                     case DataType.DataTypes.RMTES:
-                        System.out.println(fieldEntry.rmtes());
+                        // If an application just cache RMTESBuffer objects and apply all received changes to them.
+                        System.out.println((rmtesBuffer.apply(fieldEntry.rmtes())).toString());
+                        // If an application just wants to decode RMTES Field
+                        //System.out.println(fieldEntry.rmtes());
                         break;
                     case DataType.DataTypes.ERROR:
                         System.out.println("(" + fieldEntry.error().errorCodeAsString() + ")");

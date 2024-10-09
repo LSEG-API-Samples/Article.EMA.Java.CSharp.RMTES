@@ -204,7 +204,9 @@ The EMA APIs (C++, Java, and C#) generally provided RMTES converter or parser in
 
 ### Displaying non-ASCII RMTES string in EMA C# Consumer application
 
-If application wants to decode RMTES field and do not need to works with the partial update, it can just call the ```LSEG.Ema.Access.FieldEntry.OmmRmtesValue()``` method to get OmmRmtes object that represents RMTES string value.
+The Consumer *Consumer.cs* class is based on the EMA C# [310_MP_Rmtes](https://github.com/Refinitiv/Real-Time-SDK/tree/master/CSharp/Ema/Examples/Training/Consumer/300_Series/310_MP_Rmtes) and [360_MP_View](https://github.com/Refinitiv/Real-Time-SDK/tree/master/CSharp/Ema/Examples/Training/Consumer/300_Series/360_MP_View) examples. 
+
+To decode incoming RMTES data, an application can use the ```FieldEntry.OmmRmtesValue()``` method as a specific simple type as follows:
 
 ```C#
 // Consumer.cs
@@ -230,11 +232,48 @@ foreach (FieldEntry fieldEntry in fieldList)
 }
 ```
 
+If an application needs to work with partial RMTES updates, developers can cache RMTES data from the ```FieldEntry.OmmRmtesValue()``` method to the ```RmtesBuffer ``` objects and apply all received changes to them. Please refer to [EMA C# Documents](https://developers.lseg.com/en/api-catalog/refinitiv-real-time-opnsrc/refinitiv-real-time-csharp-sdk/documentation#message-api-c-development-guides) for more information about RmtesBuffer  class.
+
+```C#
+// Consumer.cs
+// Decoding FieldEntry
+
+// In the below loop partial updates for the specific field of RMTES type are handled.
+// Note that in case it is necessary to handle partial updates for multiple fields,
+// the application has to cache each RMTES string in a separate RmtesBuffer
+// (e.g., use a hashmap to track RmtesBuffer instances corresponding to specific FIDs)
+// and apply the updates accordingly.
+private readonly RmtesBuffer rmtesBuffer = new(new byte[0]);
+
+//..
+
+foreach (FieldEntry fieldEntry in fieldList)
+{
+    // ...
+    if (Data.DataCode.BLANK == fieldEntry.Code)
+                Console.WriteLine(" blank");
+    else
+        // Handle each data type (fits to the type of requests FIDs)
+        switch (fieldEntry.LoadType)
+        {
+            // ...
+            case DataTypes.RMTES:
+                // If an application just cache RMTESBuffer objects and apply all received changes to them.
+                Console.WriteLine(rmtesBuffer.Apply(fieldEntry.OmmRmtesValue()).ToString());
+                break;
+            default:
+                Console.WriteLine();
+                break;
+        }
+}
+```
+### Displaying non-ASCII RMTES string in EMA Java Consumer application
+
 ```Java
 // RMTESConsumer.java
 // Decoding FieldEntry
 fieldList.forEach(fieldEntry -> {
-    System.out.printf("Fid %d Name = %s DataType: %s Value: ", fieldEntry.fieldId(), fieldEntry.name(), DataType.asString(fieldEntry.load().dataType()));
+    //..
     if (Data.DataCode.BLANK == fieldEntry.code())
         System.out.println(" blank");
     else
@@ -248,6 +287,6 @@ fieldList.forEach(fieldEntry -> {
                 System.out.println();
                 break;
         }
-        });
+});
 ```
 
