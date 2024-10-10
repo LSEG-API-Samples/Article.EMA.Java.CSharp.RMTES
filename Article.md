@@ -15,9 +15,9 @@ This article is a sequel to my colleague's [Encoding and Decoding non-ASCII text
 
 I am demonstrating with RTSDK Java 2.2.2.L1 (EMA Java 3.8.2.0) and RTSDK C# 2.2.2.L1 (EMA C# 3.3.3.0). 
 
-## RMTES Recap: What is RMTES?
+## RMTES Recap: What is RMTES data?
 
-There are some fields on the data dictionary (*RDMFieldDictionary*) that use the **RMTES_String** data type. This data type is designed to use with local language (non-ASCII text) such as Chinese, Korean, Thai, etc. 
+Let me start by giving you a recap on what the RMTES data is.There are some fields on the data dictionary (*RDMFieldDictionary*) that use the **RMTES_String** data type. This data type is designed to use with local language (non-ASCII text) such as Chinese, Korean, Thai, etc. 
 
 Example RMTES_String field:
 
@@ -43,7 +43,11 @@ Please note that you need to be very careful with using that three-byte string, 
 
 The non-ASCII character such as Chinese, Thai, Japanese and Korea language can be used UTF-8 character set, therefore, the application can use this way to encode the non-ASCII text instead. We will talk about the implementation in EMA C# and Java in the next section.
 
+That covers the overview of RMTES data.
+
 ## Publishing non-ASCII RMTES string in EMA application
+
+So, now let’s look at how to publish the RMTES string data to downstream applications (either consumers or RTDS components).
 
 Like my colleague's statement on the [original article](https://developers.lseg.com/en/article-catalog/article/encoding-and-decoding-non-ascii-text-using-ema-and-rfa-cnet), an OMM Publisher developers can just add the UTF-8 string with the three bytes escape sequences to the **FieldList** object  and then publish that data to the wire.
 
@@ -200,13 +204,13 @@ That covers how to publish the RMTES string data.
 
 ## Decoding RMTES
 
-The EMA APIs (C++, Java, and C#) generally provided RMTES converter or parser interface for converting the encoded RMTES string payload received as part of the OMM data to a Unicode string. It helps display news in international languages with UCS2 format or transfer data through the network in ISO 2022 and UTF-8. The following section will provide a guideline for applications that want to display non-ASCII string correctly.
+That brings us to how to decode the RMTES data on the consumer side. The EMA APIs (C++, Java, and C#) generally provided RMTES converter or parser interface for converting the encoded RMTES string payload received as part of the OMM data to a Unicode string. It helps display news in international languages with UCS2 format or transfer data through the network in ISO 2022 and UTF-8. The following section will provide a guideline for applications that want to display non-ASCII string correctly.
 
 ### Displaying non-ASCII RMTES string in EMA C# Consumer application
 
-The Consumer *Consumer.cs* class is based on the EMA C# [310_MP_Rmtes](https://github.com/Refinitiv/Real-Time-SDK/tree/master/CSharp/Ema/Examples/Training/Consumer/300_Series/310_MP_Rmtes) and [360_MP_View](https://github.com/Refinitiv/Real-Time-SDK/tree/master/CSharp/Ema/Examples/Training/Consumer/300_Series/360_MP_View) examples. 
+Let’s start with the EMA C# consumer application. The Consumer *Consumer.cs* class is based on the EMA C# [310_MP_Rmtes](https://github.com/Refinitiv/Real-Time-SDK/tree/master/CSharp/Ema/Examples/Training/Consumer/300_Series/310_MP_Rmtes) and [360_MP_View](https://github.com/Refinitiv/Real-Time-SDK/tree/master/CSharp/Ema/Examples/Training/Consumer/300_Series/360_MP_View) examples. 
 
-To decode incoming RMTES data, an application can use the ```FieldEntry.OmmRmtesValue()``` method as a specific simple type as follows:
+To decode incoming RMTES data, an application can use the ```FieldEntry.OmmRmtesValue()``` method to get the OMM RMTES data:
 
 ```C#
 // Consumer.cs
@@ -237,16 +241,13 @@ If an application needs to work with partial RMTES updates, developers can cache
 ```C#
 // Consumer.cs
 // Decoding FieldEntry
-
+private readonly RmtesBuffer rmtesBuffer = new(new byte[0]);
+//..
 // In the below loop partial updates for the specific field of RMTES type are handled.
 // Note that in case it is necessary to handle partial updates for multiple fields,
 // the application has to cache each RMTES string in a separate RmtesBuffer
 // (e.g., use a hashmap to track RmtesBuffer instances corresponding to specific FIDs)
 // and apply the updates accordingly.
-private readonly RmtesBuffer rmtesBuffer = new(new byte[0]);
-
-//..
-
 foreach (FieldEntry fieldEntry in fieldList)
 {
     // ...
@@ -269,6 +270,10 @@ foreach (FieldEntry fieldEntry in fieldList)
 ```
 ### Displaying non-ASCII RMTES string in EMA Java Consumer application
 
+My next point is the EMA Java API. The Consumer *RMTESConsumer.java* class is based on the EMA Java [ex310_MP_Rmtes](https://github.com/Refinitiv/Real-Time-SDK/tree/master/Java/Ema/Examples/src/main/java/com/refinitiv/ema/examples/training/consumer/series300/ex310_MP_Rmtes) and [ex360_MP_View](https://github.com/Refinitiv/Real-Time-SDK/tree/master/Java/Ema/Examples/src/main/java/com/refinitiv/ema/examples/training/consumer/series300/ex360_MP_View) examples. 
+
+Developers can use the EMA Java ```FieldEntry.rmtes()``` method to decode incoming RMTES data as follows.
+
 ```Java
 // RMTESConsumer.java
 // Decoding FieldEntry
@@ -290,3 +295,55 @@ fieldList.forEach(fieldEntry -> {
 });
 ```
 
+Like the C# counterpart, you can cache RMTES data from the ```FieldEntry.rmtes()``` method to the ```RmtesBuffer ``` objects and apply all received changes to them if an application needs to work with partial RMTES updates.
+
+If an application needs to work with partial RMTES updates, developers can cache RMTES data from the ```FieldEntry.OmmRmtesValue()``` method to the ```RmtesBuffer ``` objects and apply all received changes to them. Please refer to [EMA Java Documents](https://developers.lseg.com/en/api-catalog/refinitiv-real-time-opnsrc/rt-sdk-java/documentation#message-api-java-development-and-configuration-guides-with-examples) for more information about RmtesBuffer class.
+
+```Java
+// RMTESConsumer.java
+// Decoding FieldEntry
+import com.refinitiv.ema.access.RmtesBuffer;
+
+private RmtesBuffer rmtesBuffer = EmaFactory.createRmtesBuffer();
+//...
+// In the below loop partial updates for the specific field of RMTES type are handled.
+// Note that in case it is necessary to handle partial updates for multiple fields,
+// the application has to cache each RMTES string in a separate RmtesBuffer
+// (e.g., use a hashmap to track RmtesBuffer instances corresponding to specific FIDs)
+// and apply the updates accordingly.
+fieldList.forEach(fieldEntry -> {
+    //..
+    if (Data.DataCode.BLANK == fieldEntry.code())
+        System.out.println(" blank");
+    else
+        //Handle each data type (fits to the type of requests FIDs)
+        switch (fieldEntry.loadType()) {
+            //...
+            case DataType.DataTypes.RMTES:
+                // If an application just cache RMTESBuffer objects and apply all received changes to them.
+                System.out.println((rmtesBuffer.apply(fieldEntry.rmtes())).toString());
+                break;
+            default:
+                System.out.println();
+                break;
+        }
+});
+```
+
+The example result of the EMA Java ```System.out.println(fieldEntry.rmtes());``` and C# ```Console.WriteLine(fieldEntry.OmmRmtesValue());``` methods will be as follows:
+
+```bash
+consumer-1  | Fid 1352 Name = DSPLY_NMLL DataType: Rmtes Value: 런던 증권 거래소
+...
+consumer-1  | Fid 1352 Name = DSPLY_NMLL DataType: Rmtes Value: ตลาดหลักทรัพย์ลอนดอน
+...
+consumer-1  | Fid 1352 Name = DSPLY_NMLL DataType: Rmtes Value: 倫敦證券交易所
+```
+
+That’s all I have to say about how to decode RMTES data on the EMA Consumer application.
+
+## Conclusion
+
+The LSEG Real-Time platform uses RMTES data to store non-ASCII text data such as Chinese, Japanese, Korean, etc. languages. Developers can use the UTF-8 string with extra 3 bytes escape sequence prefix to encode that data and publish to downstream components as the RMTES data. 
+
+The EMA API (either C++, Java, or C#) provides interfaces to encode and decode the RMTES data with just a few lines of code. 

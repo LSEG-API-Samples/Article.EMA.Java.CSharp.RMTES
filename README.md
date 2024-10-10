@@ -9,13 +9,13 @@
 Example Code Disclaimer:
 ALL EXAMPLE CODE IS PROVIDED ON AN “AS IS” AND “AS AVAILABLE” BASIS FOR ILLUSTRATIVE PURPOSES ONLY. REFINITIV MAKES NO REPRESENTATIONS OR WARRANTIES OF ANY KIND, EXPRESS OR IMPLIED, AS TO THE OPERATION OF THE EXAMPLE CODE, OR THE INFORMATION, CONTENT, OR MATERIALS USED IN CONNECTION WITH THE EXAMPLE CODE. YOU EXPRESSLY AGREE THAT YOUR USE OF THE EXAMPLE CODE IS AT YOUR SOLE RISK.
 
-## Overview
+## <a id="overview"></a>Overview
 
 This article is a sequel to my colleague's [Encoding and Decoding non-ASCII text using EMA and RFA C++/.NET](https://developers.lseg.com/en/article-catalog/article/encoding-and-decoding-non-ascii-text-using-ema-and-rfa-cnet). While that article describes how to encoding and decoding RMTES String data with the [EMA C++](https://developers.lseg.com/en/api-catalog/refinitiv-real-time-opnsrc/rt-sdk-cc) and the legacy RFA C++ APIs, the part two article shows the same process with the strategic [EMA C#](https://developers.lseg.com/en/api-catalog/refinitiv-real-time-opnsrc/refinitiv-real-time-csharp-sdk) and [EMA Java](https://developers.lseg.com/en/api-catalog/refinitiv-real-time-opnsrc/rt-sdk-java) APIs.
 
 I am demonstrating with RTSDK Java 2.2.2.L1 (EMA Java 3.8.2.0) and RTSDK C# 2.2.2.L1 (EMA C# 3.3.3.0). 
 
-## RMTES Recap: What is RMTES?
+## <a id="rmtes_recap"></a>RMTES Recap: What is RMTES?
 
 There are some fields on the data dictionary (*RDMFieldDictionary*) that use the **RMTES_String** data type. This data type is designed to use with local language (non-ASCII text) such as Chinese, Korean, Thai, etc. 
 
@@ -83,7 +83,11 @@ The EMA Java project supports [IntelliJ IDEA](https://www.jetbrains.com/idea/) I
 
 That covers the prerequisite of this RMTES project.
 
-## How to run
+## <a id="developoment"></a>Development Detail
+
+Please check the [Article.md](./Article.md) file for more detail about how to encode and decode the RMTES string data with the EMA C# and Java APIS.
+
+## <a id="run"></a>How to run
 
 To build and run the Provider and Consumer projects with Docker, please go to the *RMTES_EMACSharp* or *RMTES_EMAJava* folder via a command prompt and run the following [Docker Compose](https://docs.docker.com/compose/) command.
 
@@ -167,7 +171,7 @@ consumer-1  |
 ...
 ```
 
-## <a id="ref"></a>References
+## <a id="references"></a>References
 
 For further details, please check out the following resources:
 - [Real-Time SDK C#](https://developers.lseg.com/en/api-catalog/refinitiv-real-time-opnsrc/refinitiv-real-time-csharp-sdk) and [Real-Time SDK Java](https://developers.lseg.com/en/api-catalog/refinitiv-real-time-opnsrc/rt-sdk-java) pages on the [LSEG Developer Community](https://developers.lseg.com/) website.
