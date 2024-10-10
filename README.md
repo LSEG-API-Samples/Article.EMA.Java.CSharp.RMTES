@@ -1,6 +1,6 @@
 # Encoding and Decoding non-ASCII text using EMA C# and Java
 
-- version: 1.0.1
+- version: 1.0.0
 - Last Update: Oct 2024
 - Environment:  or Windows
 - Compiler: .NET 8.0 and Java SDK 11
@@ -89,12 +89,12 @@ Please check the [Article.md](./Article.md) file for more detail about how to en
 
 ## <a id="run"></a>How to run
 
-To build and run the Provider and Consumer projects with Docker, please go to the *RMTES_EMACSharp* or *RMTES_EMAJava* folder via a command prompt and run the following [Docker Compose](https://docs.docker.com/compose/) command.
+To build and run the Provider and Consumer projects with Docker, please go to the *RMTES_EMACSharp* or *RMTES_EMAJava* folder via a command prompt application and run the following [Docker Compose](https://docs.docker.com/compose/) command.
 
 ```bash
 docker compose up
 ```
-To stop the projects, use the following Docker Compose command inside the same folder.
+To stop the projects, use the following Docker Compose command inside the same folder on a command prompt.
 
 ```bash
 docker compose down
@@ -207,5 +207,3 @@ For further details, please check out the following resources:
 - [Encoding and Decoding non-ASCII text using EMA and RFA C++/.NET](https://developers.lseg.com/en/article-catalog/article/encoding-and-decoding-non-ascii-text-using-ema-and-rfa-cnet) article.
 
 For any question related to this article or the RTSDK page, please use the Developer Community [Q&A Forum](https://community.developers.refinitiv.com/).
-
-[TBD]
