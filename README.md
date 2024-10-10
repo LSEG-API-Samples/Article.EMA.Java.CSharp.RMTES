@@ -171,6 +171,30 @@ consumer-1  |
 ...
 ```
 
+## <a id="troubleshooting"></a>Troubleshooting
+
+**Question 1**: I tried the EMA C# example projects on Windows using Visual Studio 2022 IDE. The Consumer application shows RMTES data as "???" string.
+
+![figure-1](images/troubleshooting_1.png "Visual Studio displays incorrect text")
+
+**Answer**: This is the Windows built-in command prompt (and Powershell) applications issue that cannot display the UTF-8 text correctly by default. I strongly suggest you run examples on the Linux environment or Docker.
+
+Example result from Docker:
+
+![figure-2](images/troubleshooting_2.png "Docker displays text correctly")
+
+**Question 2**: I tried the EMA Java example project on Windows. The Consumer application shows RMTES data as "???" string when I run a jar file manually.
+
+**Answer**: This is the Windows built-in command prompt (and Powershell) applications issue that cannot display the UTF-8 text correctly by default. I strongly suggest you run examples on the UTF-8 supported IDE like InteliJJ IDEA IDE, or on Linux environment or Docker.
+
+Example result from InteliJJ IDEA IDE:
+
+![figure-3](images/troubleshooting_3.png "InteliJJ IDEA IDE displays text correctly")
+
+**Question 3**: I got ```'docker' is not recognized as an internal or external command, operable program or batch file.``` or ```docker command not found``` error message. 
+
+**Answer**: You need to install [Docker Desktop](https://www.docker.com/products/docker-desktop/) application on your machine.
+
 ## <a id="references"></a>References
 
 For further details, please check out the following resources:
