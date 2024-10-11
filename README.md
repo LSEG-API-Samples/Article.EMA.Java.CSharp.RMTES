@@ -188,7 +188,7 @@ Example result from Docker:
 
 **Answer**: This is the Windows built-in command prompt (and Powershell) applications issue that cannot display the UTF-8 text correctly by default. I strongly suggest you run examples on the UTF-8 supported IDE like InteliJJ IDEA IDE, or on Linux environment or Docker.
 
-Example result from InteliJJ IDEA IDE:
+Example result from IntelliJJ IDEA IDE:
 
 ![figure-3](images/troubleshooting_3.png "InteliJJ IDEA IDE displays text correctly")
 
