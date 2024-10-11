@@ -45,7 +45,7 @@ The non-ASCII character such as Chinese, Thai, Japanese and Korea language can b
 
 That covers the overview of RMTES data.
 
-## Publishing non-ASCII RMTES string in EMA application
+## <a id="pub_rmtes_csharp"></a>Publishing non-ASCII RMTES string in EMA application
 
 So, now let’s look at how to publish the RMTES string data to downstream applications (either consumers or RTDS components).
 
@@ -202,7 +202,7 @@ The *RMTESProvider.java* file also has been added a logic to send UTF-8 String f
 
 That covers how to publish the RMTES string data.
 
-## Decoding RMTES
+## <a id="decode_rmtes_csharp"></a>Decoding non-ASCII RMTES string in EMA Consumer application
 
 That brings us to how to decode the RMTES data on the consumer side. The EMA APIs (C++, Java, and C#) generally provided RMTES converter or parser interface for converting the encoded RMTES string payload received as part of the OMM data to a Unicode string. It helps display news in international languages with UCS2 format or transfer data through the network in ISO 2022 and UTF-8. The following section will provide a guideline for applications that want to display non-ASCII string correctly.
 
@@ -342,8 +342,10 @@ consumer-1  | Fid 1352 Name = DSPLY_NMLL DataType: Rmtes Value: 倫敦證券交�
 
 That’s all I have to say about how to decode RMTES data on the EMA Consumer application.
 
-## Conclusion
+## <a id="conclusion"></a>Conclusion
 
 The LSEG Real-Time platform uses RMTES data to store non-ASCII text data such as Chinese, Japanese, Korean, etc. languages. Developers can use the UTF-8 string with extra 3 bytes escape sequence prefix to encode that data and publish to downstream components as the RMTES data. 
 
 The EMA API (either C++, Java, or C#) provides interfaces to encode and decode the RMTES data with just a few lines of code. 
+
+That covers all I wanted to tell you about how to encode and decode non-ASCII text data via RMTES with the EMA APIs.

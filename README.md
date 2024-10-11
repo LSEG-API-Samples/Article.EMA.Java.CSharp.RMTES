@@ -103,6 +103,7 @@ docker compose down
 Example Results (from EMA C# projects):
 
 ```bash
+$>docker compose up
 [+] Running 3/3
  ✔ Network emacsharp_rmtes_default       Created                                                                                                   0.1s 
  ✔ Container emacsharp_rmtes-provider-1  Created                                                                                                   0.1s 

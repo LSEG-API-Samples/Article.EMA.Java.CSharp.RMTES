@@ -1,4 +1,9 @@
-FROM maven:3.9.6-eclipse-temurin-11-alpine@sha256:0f36e25a2daa38721ddc15d093fe952c38ab6a44901c7d0674feadc45538f356 as builder
+# Builder Maven Image
+# Supported JAVA_VERSION is 11, 17, and 21 (AS of RTSDK Java 2.2.2.L1 - Oct 2024)
+ARG JAVA_VERSION=17
+ARG VARIANT=alpine 
+FROM maven:3.9.9-eclipse-temurin-${JAVA_VERSION}-${VARIANT} as builder
+LABEL authors="Developer Relations"
 LABEL authors="Developer Relations"
 ENV MAVEN_OPTS="-XX:+TieredCompilation -XX:TieredStopAtLevel=1"
 WORKDIR /app
@@ -8,8 +13,8 @@ COPY src ./src
 #RUN mvn clean -e -B package
 RUN mvn clean install -Dmaven.test.skip=true
 
-FROM eclipse-temurin:11-jre-alpine@sha256:eeca23b6c113f1817837d3ced7d70405db4664aade6b6f30076160e346fbbfb9
-
+# Runner JRE Image
+FROM eclipse-temurin:${JAVA_VERSION}-jre-${VARIANT}
 WORKDIR /app
 COPY --from=builder /app/target/RMTES_EMAJ-1.0-jar-with-dependencies.jar .
 COPY EmaConfig.xml .
