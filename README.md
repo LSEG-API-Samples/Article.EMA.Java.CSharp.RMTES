@@ -45,7 +45,7 @@ Before I am going further, there is some prerequisite, dependencies, and librari
 
 ### Docker Desktop Application
 
-You can build and run each EMA C#/Java Provider and Consumer applications manually. However, it is easier to build and run with a simple ```Docker``` compose command. 
+You can build and run each EMA C#/Java Provider and Consumer applications manually. However, it is easier to build and run with a simple ```docker compose``` command. 
 
 The [Docker Desktop](https://www.docker.com/products/docker-desktop/) application is required to run all projects.
 
@@ -186,11 +186,11 @@ Example result from Docker:
 
 **Question 2**: I tried the EMA Java example project on Windows. The Consumer application shows RMTES data as "???" string when I run a jar file manually.
 
-**Answer**: This is the Windows built-in command prompt (and Powershell) applications issue that cannot display the UTF-8 text correctly by default. I strongly suggest you run examples on the UTF-8 supported IDE like InteliJJ IDEA IDE, or on Linux environment or Docker.
+**Answer**: This is the Windows built-in command prompt (and Powershell) applications issue that cannot display the UTF-8 text correctly by default. I strongly suggest you run examples on the UTF-8 supported IDE like IntelliJ IDEA IDE, or on Linux environment or Docker.
 
-Example result from IntelliJJ IDEA IDE:
+Example result from IntelliJ IDEA IDE:
 
-![figure-3](images/troubleshooting_3.png "InteliJJ IDEA IDE displays text correctly")
+![figure-3](images/troubleshooting_3.png "IntelliJ IDEA IDE displays text correctly")
 
 **Question 3**: I got ```'docker' is not recognized as an internal or external command, operable program or batch file.``` or ```docker command not found``` error message. 
 
