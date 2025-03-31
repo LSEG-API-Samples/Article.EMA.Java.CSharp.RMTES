@@ -13,7 +13,7 @@ ALL EXAMPLE CODE IS PROVIDED ON AN “AS IS” AND “AS AVAILABLE” BASIS FOR 
 
 This article is a sequel to my colleague's [Encoding and Decoding non-ASCII text using EMA and RFA C++/.NET](https://developers.lseg.com/en/article-catalog/article/encoding-and-decoding-non-ascii-text-using-ema-and-rfa-cnet). While that article describes how to encoding and decoding RMTES String data with the [EMA C++](https://developers.lseg.com/en/api-catalog/real-time-opnsrc/rt-sdk-cc) and the legacy RFA C++ APIs, the part two article shows the same process with the strategic [EMA C#](https://developers.lseg.com/en/api-catalog/real-time-opnsrc/rt-sdk-csharp) and [EMA Java](https://developers.lseg.com/en/api-catalog/real-time-opnsrc/rt-sdk-java) APIs.
 
-I am demonstrating with RTSDK Java 2.2.2.L1 (EMA Java 3.8.2.0) and RTSDK C# 2.2.2.L1 (EMA C# 3.3.3.0). 
+I am demonstrating with RTSDK Java 2.2.3.L1 (EMA Java 3.8.3.0) and RTSDK C# 2.2.3.L1 (EMA C# 3.3.1.1). 
 
 ## <a id="rmtes_recap"></a>RMTES Recap: What is RMTES?
 

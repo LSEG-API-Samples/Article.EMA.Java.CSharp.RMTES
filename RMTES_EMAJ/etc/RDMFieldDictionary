@@ -4,14 +4,14 @@
 ! Refinitiv. Refinitiv may update or remove this document
 ! at any time without notice.
 !
-!   Version	 4.20.62_RealTimeDistributionSystem_24.31		04/08/2024
-!	* Modified 04/08/2024 at Oak Brook:
-!     - This file is a based on RWF.DAT from RDMD V4.20.62.
+!   Version	 4.20.65_RealTimeDistributionSystem_24.91		11/17/2024
+!	* Modified 11/17/2024 at Oak Brook:
+!     - This file is a based on RWF.DAT from RDMD V4.20.65.
 !
 !   RDM Field Dictionary
 !   --------------------
 !
-!   Version: 4.20.62_RealTimeDistributionSystem
+!   Version: 4.20.65_RealTimeDistributionSystem
 !
 !   This file contains a complete list of acronyms used in Field Lists
 !   and, for each acronym, gives:
@@ -29,9 +29,9 @@
 !tag Filename  RWF.DAT
 !tag Desc      RDF-D RWF field set
 !tag Type      1
-!tag Version   4.20.62
-!tag Build     1
-!tag Date      04-Mar-2024
+!tag Version   4.20.65
+!tag Build     5
+!tag Date      14-Oct-2024
 !tag DictionaryId 1
 !
 !ACRONYM    DDE ACRONYM          FID  RIPPLES TO  FIELD TYPE     LENGTH  RWF TYPE   RWF LEN
@@ -5690,8 +5690,9 @@ ASK_NET_CH "LT ASK-HIS CL ASK"   2286  NULL        PRICE              17  REAL64
 !
 TIME_MATUR "DEBT TIME TO MAT"    2287  NULL        INTEGER            15  REAL64           7
 !
-! The to maturity for a debt instrument qualified by the field MATUR_FLAG (2364) which 
-! indicates whether the units of time involved are years, months, weeks or days.
+! The remaining time to maturity for a debt instrument, qualified by the field 
+! MATUR_UNIT (#2378) which indicates whether the units of time involved are years, 
+! months, weeks or days (or other).
 !
 GEN_VAL11  "GEN VAL11"           2288  NULL        PRICE              17  REAL64           7
 GEN_VAL12  "GEN VAL12"           2289  NULL        PRICE              17  REAL64           7
@@ -5948,8 +5949,8 @@ YTM_ASKNCH "NETCH MAT ASK YLD"   2377  NULL        PRICE              17  REAL64
 !
 MATUR_UNIT "TIM TO MAT QUALFR"   2378  NULL        ENUMERATED    3 ( 3 )  ENUM             1
 !
-! This field qualifies the time to maturity field (TIME_MATUR) and indicates whether 
-! the units of time involved are years, months, weeks or days.
+! This field qualifies the time to maturity field TIM_TO_MAT (#2466) and indicates 
+! whether the units of time involved are years, months, weeks or days.
 !
 BID_CURRCY "BID CURRENCY"        2379  NULL        ENUMERATED    5 ( 3 )  ENUM             2
 !
@@ -6153,7 +6154,9 @@ CRT_YLDHC  "CURR YLD HIS CL"     2465  NULL        PRICE              17  REAL64
 !
 TIM_TO_MAT "TIME TO MATURITY"    2466  NULL        PRICE              17  REAL64           7
 !
-! Time to maturity
+! The remaining time to maturity for a debt instrument, qualified by the field 
+! MATUR_UNIT (#2378) which indicates whether the units of time involved are years, 
+! months, weeks or days (or other).
 !
 BS_PNT_VAL "BASED PNT VALUE"     2467  NULL        PRICE              17  REAL64           7
 !
@@ -9944,7 +9947,7 @@ IND_AUCVOL "IND AUC VOL"         3913  NULL        INTEGER            15  REAL64
 !
 INDAUCTYPE "IND AUC TYPE"        3914  NULL        ALPHANUMERIC        3  RMTES_STRING     3
 !
-! Indicative Auction Type
+! Type of indicative auction, such as opening, volatility or closing.
 !
 MKT_STATUS "MARKET STATUS"       3915  NULL        ALPHANUMERIC        5  RMTES_STRING     5
 !
@@ -11466,11 +11469,11 @@ IRGDATE    "IRG DATE"            4349  NULL        DATE               11  DATE  
 !
 MID_HIGH   "MID HIGH"            4350  NULL        PRICE              17  REAL64           7
 !
-! Mid high price
+! Highest value in current trading day for MID_PRICE1 (#4990).
 !
 MID_LOW    "MID LOW"             4351  NULL        PRICE              17  REAL64           7
 !
-! Mid low price
+! Lowest value in current trading day for MID_PRICE1 (#4990).
 !
 MID_HTIM   "MID HIGH TIME"       4352  NULL        TIME_SECONDS        8  TIME             5
 !
@@ -14907,7 +14910,7 @@ ALERT_ID   "ALERT ID"            5700  NULL        INTEGER            15  REAL64
 !
 START_TMS  "START TIME SEC"      5701  NULL        TIME_SECONDS        8  TIME             5
 !
-! Start time in seconds of outage or planned maintenance
+! Countdown time in seconds to the publication of delayed data.
 !
 PAIR_CLIP1 "PAIR CLIP1"          5702  NULL        ALPHANUMERIC        9  RMTES_STRING     9
 !
@@ -19972,7 +19975,10 @@ TAC_NARD   "TRD AT CLS NUM ASK"  7174  NULL        INTEGER            15  INT64 
 !
 ! The number of Trade-at-Close ask orders.
 !
-PRE_INT296 "PRED INTEGER 296"    7175  NULL        INTEGER            15  INT64            6
+MAX_ORD_S3 "MAX ORDER SIZE 3"    7175  NULL        INTEGER            15  INT64            6
+!
+! Additional Maximum Order Size.
+!
 PRE_INT297 "PRED INTEGER 297"    7176  NULL        INTEGER            15  INT64            6
 PRE_INT298 "PRED INTEGER 298"    7177  NULL        INTEGER            15  INT64            6
 PRE_INT299 "PRED INTEGER 299"    7178  NULL        INTEGER            15  INT64            6
@@ -26588,9 +26594,9 @@ IV_UPDT_DT "IMP VOLT UPDATE DT"  9319  NULL        DATE               11  DATE  
 !
 ! Update date of Implied Volatility.
 !
-PRE_DT209  "PRED DATE 209"       9320  NULL        DATE               11  DATE             4
+SES1_C_EDT "SESS1 CLS EDT"       9320  NULL        DATE               11  DATE             4
 !
-! TBD
+! The effective date of the first session close price, SESS1_CLS.
 !
 LEG2_ISSDT "LEG2 ISSUE DATE"     9321  NULL        DATE               11  DATE             4
 !
@@ -26907,8 +26913,14 @@ ALT_BAC_DT "ALT BID ASK DATE"    9406  NULL        DATE               11  DATE  
 !
 ! Alternative closing bid and ask date.
 !
-PRE_DT296  "PRED DATE 296"       9407  NULL        DATE               11  DATE             4
-PRE_DT297  "PRED DATE 297"       9408  NULL        DATE               11  DATE             4
+SES2_C_EDT "SESS2 CLS EDT"       9407  NULL        DATE               11  DATE             4
+!
+! The effective date of the second session close price, SESS2_CLS.
+!
+CA_HSTCLDT "CARRY HST CLS DT"    9408  NULL        DATE               11  DATE             4
+!
+! Carry historical close date.
+!
 PRE_DT298  "PRED DATE 298"       9409  NULL        DATE               11  DATE             4
 PRE_DT299  "PRED DATE 299"       9410  NULL        DATE               11  DATE             4
 PRE_DT300  "PRED DATE 300"       9411  NULL        DATE               11  DATE             4
@@ -32201,21 +32213,66 @@ BLK_DVA_RG "BLK DYVAL RNG"      11152  NULL        PRICE              17  REAL64
 ! Dynamic price range for block trades. The variation range combines with a reference 
 ! price which determines the upper and lower price limits for block trades.
 !
-PRERL2162  "PRED REAL 2162"     11153  NULL        PRICE              17  REAL64           7
-PRERL2163  "PRED REAL 2163"     11154  NULL        PRICE              17  REAL64           7
-PRERL2164  "PRED REAL 2164"     11155  NULL        PRICE              17  REAL64           7
-PRERL2165  "PRED REAL 2165"     11156  NULL        PRICE              17  REAL64           7
-PRERL2166  "PRED REAL 2166"     11157  NULL        PRICE              17  REAL64           7
-PRERL2167  "PRED REAL 2167"     11158  NULL        PRICE              17  REAL64           7
-PRERL2168  "PRED REAL 2168"     11159  NULL        PRICE              17  REAL64           7
-PRERL2169  "PRED REAL 2169"     11160  NULL        PRICE              17  REAL64           7
-PRERL2170  "PRED REAL 2170"     11161  NULL        PRICE              17  REAL64           7
-PRERL2171  "PRED REAL 2171"     11162  NULL        PRICE              17  REAL64           7
-PRERL2172  "PRED REAL 2172"     11163  NULL        PRICE              17  REAL64           7
-PRERL2173  "PRED REAL 2173"     11164  NULL        PRICE              17  REAL64           7
-PRERL2174  "PRED REAL 2174"     11165  NULL        PRICE              17  REAL64           7
-PRERL2175  "PRED REAL 2175"     11166  NULL        PRICE              17  REAL64           7
-PRERL2176  "PRED REAL 2176"     11167  NULL        PRICE              17  REAL64           7
+SESS3_TURN "SESSION 3 TURNOVER" 11153  NULL        PRICE              17  REAL64           7
+!
+! Turnover of session 3 (3rd normal trading session).
+!
+ROLL_RATE  "ROLL DOWN RATE"     11154  NULL        PRICE              17  REAL64           7
+!
+! Rolldown rate (Duration Adjusted par rate).
+!
+CARRY_OPN  "CARRY OPEN"         11155  NULL        PRICE              17  REAL64           7
+!
+! Carry Open.
+!
+CARRY_HI   "CARRY HIGH"         11156  NULL        PRICE              17  REAL64           7
+!
+! Carry High.
+!
+CARRY_LO   "CARRY LOW"          11157  NULL        PRICE              17  REAL64           7
+!
+! Carry Low.
+!
+CA_HST_CL  "CARRY COST HST CLS" 11158  NULL        PRICE              17  REAL64           7
+!
+! Carry cost historical close.
+!
+ROLL_OPN   "ROLL OPEN"          11159  NULL        PRICE              17  REAL64           7
+!
+! Roll Open.
+!
+ROLL_HI    "ROLL HIGH"          11160  NULL        PRICE              17  REAL64           7
+!
+! Roll High.
+!
+ROLL_LO    "ROLL LOW"           11161  NULL        PRICE              17  REAL64           7
+!
+! Roll Low.
+!
+ROLL_HSTCL "ROLL HST CLOSE"     11162  NULL        PRICE              17  REAL64           7
+!
+! Roll historical close.
+!
+TOTCRD_OPN "TOT CARL DOWN OPN"  11163  NULL        PRICE              17  REAL64           7
+!
+! Total Carry Roll Down Open.
+!
+TOTCRD_HI  "TOT CARL DOWN HI"   11164  NULL        PRICE              17  REAL64           7
+!
+! Total Carry Roll Down High.
+!
+TOTCRD_LO  "TOT CARL DOWN LO"   11165  NULL        PRICE              17  REAL64           7
+!
+! Total Carry Roll Down Low.
+!
+TOCR_HSTCL "TOT CA DWN HST CLS" 11166  NULL        PRICE              17  REAL64           7
+!
+! Total Carry Roll Down historical close.
+!
+CNTR_VALUE "CONTRACT VALUE"     11167  NULL        PRICE              17  REAL64           7
+!
+! Contract Value.
+!
 PRERL2177  "PRED REAL 2177"     11168  NULL        PRICE              17  REAL64           7
 PRERL2178  "PRED REAL 2178"     11169  NULL        PRICE              17  REAL64           7
 PRERL2179  "PRED REAL 2179"     11170  NULL        PRICE              17  REAL64           7
@@ -32873,7 +32930,9 @@ NXT_FC_PRD "NXT FCAST PRD"      11689  NULL        ALPHANUMERIC        8  RMTES_
 !
 IND_AUC_TP "IND AUC PRC IND"    11690  NULL        ALPHANUMERIC        8  RMTES_STRING     8
 !
-! Price indicators for indicative Auction Price, IND_AUC.
+! Field for giving further information relating to the price in IND_AUC. Examples 
+! include whether the price is within an agreed range, or where the price came from 
+! (such as a bid, ask or mid value).
 !
 ADMIN_COND "ADMIN COND"         11691  NULL        ALPHANUMERIC        8  RMTES_STRING     8
 !
@@ -35732,10 +35791,22 @@ CNTR_CYCL  "CONTRACT CYCLE"     13113  NULL        ENUMERATED    3 ( 3 )  ENUM  
 ! Shows the contract cycle code. The code may change during the contract lifecycle, 
 ! e.g., from (Q) Quarterly to (M) Monthly.
 !
-PRE_1ET413 "PRED 1 ET 413"      13114  NULL        ENUMERATED    3 ( 8 )  ENUM             1
-PRE_1ET414 "PRED 1 ET 414"      13115  NULL        ENUMERATED    3 ( 8 )  ENUM             1
-PRE_1ET415 "PRED 1 ET 415"      13116  NULL        ENUMERATED    3 ( 8 )  ENUM             1
-PRE_1ET416 "PRED 1 ET 416"      13117  NULL        ENUMERATED    3 ( 8 )  ENUM             1
+BASE_PRCTP "BASE PRICE TYPE"    13114  NULL        ENUMERATED    3 ( 8 )  ENUM             1
+!
+! Indicates the type of the Base Price.
+!
+IRG_AGG_S1 "AGGRS IRG ORD SD1"  13115  NULL        ENUMERATED    3 ( 8 )  ENUM             1
+!
+! An indicator to show the aggressive order condition for last irregular trade.
+!
+PD_AGG_S1  "AGGRS PD ORD SD1"   13116  NULL        ENUMERATED    3 ( 8 )  ENUM             1
+!
+! An indicator to show the aggressive order condition for last previous day trade.
+!
+VAL_METHOD "VALUATION METHOD"   13117  NULL        ENUMERATED    3 ( 8 )  ENUM             1
+!
+! Margin style valuation method.
+!
 PRE_1ET417 "PRED 1 ET 417"      13118  NULL        ENUMERATED    3 ( 8 )  ENUM             1
 PRE_1ET418 "PRED 1 ET 418"      13119  NULL        ENUMERATED    3 ( 8 )  ENUM             1
 PRE_1ET419 "PRED 1 ET 419"      13120  NULL        ENUMERATED    3 ( 8 )  ENUM             1
@@ -36916,8 +36987,14 @@ DIVYLD_PRD "DIVIDEND YLD CP CW" 13636  NULL        ENUMERATED    5 ( 8 )  ENUM  
 !
 ! Dividend Yield Computation Catchment Window (YIELD #35).
 !
-PRE_2ET316 "PRED 2 ET 316"      13637  NULL        ENUMERATED    5 ( 8 )  ENUM             2
-PRE_2ET317 "PRED 2 ET 317"      13638  NULL        ENUMERATED    5 ( 8 )  ENUM             2
+ORD_SZ_Q3  "ORDER SIZE 3 QUAL"  13637  NULL        ENUMERATED    5 ( 8 )  ENUM             2
+!
+! Qualifier associated with third order size and value, i.e., MAX_ORD_S3.
+!
+MET_TYP26  "METRIC TYPE 26"     13638  NULL        ENUMERATED    5 ( 8 )  ENUM             2
+!
+! Metric Type 26.
+!
 PRE_2ET318 "PRED 2 ET 318"      13639  NULL        ENUMERATED    5 ( 8 )  ENUM             2
 PRE_2ET319 "PRED 2 ET 319"      13640  NULL        ENUMERATED    5 ( 8 )  ENUM             2
 PRE_2ET320 "PRED 2 ET 320"      13641  NULL        ENUMERATED    5 ( 8 )  ENUM             2
