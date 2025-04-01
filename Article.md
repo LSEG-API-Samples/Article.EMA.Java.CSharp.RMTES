@@ -7,13 +7,13 @@
 - Prerequisite: [prerequisite](#prerequisite)
 
 Example Code Disclaimer:
-ALL EXAMPLE CODE IS PROVIDED ON AN “AS IS” AND “AS AVAILABLE” BASIS FOR ILLUSTRATIVE PURPOSES ONLY. REFINITIV MAKES NO REPRESENTATIONS OR WARRANTIES OF ANY KIND, EXPRESS OR IMPLIED, AS TO THE OPERATION OF THE EXAMPLE CODE, OR THE INFORMATION, CONTENT, OR MATERIALS USED IN CONNECTION WITH THE EXAMPLE CODE. YOU EXPRESSLY AGREE THAT YOUR USE OF THE EXAMPLE CODE IS AT YOUR SOLE RISK.
+ALL EXAMPLE CODE IS PROVIDED ON AN “AS IS” AND “AS AVAILABLE” BASIS FOR ILLUSTRATIVE PURPOSES ONLY. LSEG MAKES NO REPRESENTATIONS OR WARRANTIES OF ANY KIND, EXPRESS OR IMPLIED, AS TO THE OPERATION OF THE EXAMPLE CODE, OR THE INFORMATION, CONTENT, OR MATERIALS USED IN CONNECTION WITH THE EXAMPLE CODE. YOU EXPRESSLY AGREE THAT YOUR USE OF THE EXAMPLE CODE IS AT YOUR SOLE RISK.
 
 ## Overview
 
-This article is a sequel to my colleague's [Encoding and Decoding non-ASCII text using EMA and RFA C++/.NET](https://developers.lseg.com/en/article-catalog/article/encoding-and-decoding-non-ascii-text-using-ema-and-rfa-cnet). While that article describes how to encoding and decoding RMTES String data with the [EMA C++](https://developers.lseg.com/en/api-catalog/refinitiv-real-time-opnsrc/rt-sdk-cc) and the legacy RFA C++ APIs, the part two article shows the same process with the strategic [EMA C#](https://developers.lseg.com/en/api-catalog/refinitiv-real-time-opnsrc/refinitiv-real-time-csharp-sdk) and [EMA Java](https://developers.lseg.com/en/api-catalog/refinitiv-real-time-opnsrc/rt-sdk-java) APIs.
+This article is a sequel to my colleague's [Encoding and Decoding non-ASCII text using EMA and RFA C++/.NET](https://developers.lseg.com/en/article-catalog/article/encoding-and-decoding-non-ascii-text-using-ema-and-rfa-cnet). While that article describes how to encoding and decoding RMTES String data with the [EMA C++](https://developers.lseg.com/en/api-catalog/real-time-opnsrc/rt-sdk-cc) and the legacy RFA C++ APIs, the part two article shows the same process with the strategic [EMA C#](https://developers.lseg.com/en/api-catalog/real-time-opnsrc/rt-sdk-csharp) and [EMA Java](https://developers.lseg.com/en/api-catalog/real-time-opnsrc/rt-sdk-java) APIs.
 
-I am demonstrating with RTSDK Java 2.2.2.L1 (EMA Java 3.8.2.0) and RTSDK C# 2.2.2.L1 (EMA C# 3.3.3.0). 
+I am demonstrating with RTSDK Java 2.2.3.L1 (EMA Java 3.8.3.0) and RTSDK C# 2.2.3.L1 (EMA C# 3.3.1.1). 
 
 ## RMTES Recap: What is RMTES data?
 
@@ -297,7 +297,7 @@ fieldList.forEach(fieldEntry -> {
 
 Like the C# counterpart, you can cache RMTES data from the ```FieldEntry.rmtes()``` method to the ```RmtesBuffer ``` objects and apply all received changes to them if an application needs to work with partial RMTES updates.
 
-If an application needs to work with partial RMTES updates, developers can cache RMTES data from the ```FieldEntry.OmmRmtesValue()``` method to the ```RmtesBuffer ``` objects and apply all received changes to them. Please refer to [EMA Java Documents](https://developers.lseg.com/en/api-catalog/refinitiv-real-time-opnsrc/rt-sdk-java/documentation#message-api-java-development-and-configuration-guides-with-examples) for more information about RmtesBuffer class.
+If an application needs to work with partial RMTES updates, developers can cache RMTES data from the ```FieldEntry.OmmRmtesValue()``` method to the ```RmtesBuffer ``` objects and apply all received changes to them. Please refer to [EMA Java Documents](https://developers.lseg.com/en/api-catalog/real-time-opnsrc/rt-sdk-java/documentation#message-api-java-development-and-configuration-guides-with-examples) for more information about RmtesBuffer class.
 
 ```Java
 // RMTESConsumer.java
